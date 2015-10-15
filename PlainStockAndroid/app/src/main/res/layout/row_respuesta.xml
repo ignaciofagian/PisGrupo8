@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:text="Respuestas"
+        android:id="@+id/btRespuesta"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:layout_marginTop="100dp"
+        android:textSize="12sp"
+        android:background="#31ff77"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp" />
+</RelativeLayout>

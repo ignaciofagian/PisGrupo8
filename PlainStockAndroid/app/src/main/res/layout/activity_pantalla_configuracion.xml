@@ -1,0 +1,121 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.fing.proingsoft.plainstock.PantallaConfiguracion">
+
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/llPreguntas"
+            android:weightSum="10">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="8">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/str_Idioma"
+                    android:id="@+id/tvIdioma"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="52dp"
+                    android:layout_marginLeft="60dp"
+                    android:gravity="center_vertical" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:id="@+id/spnIdiomas"
+                    android:layout_toRightOf="@+id/tvIdioma"
+                    android:layout_alignBottom="@+id/tvIdioma"
+                    android:layout_marginLeft="52dp"
+
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Fecha"
+                    android:id="@+id/tvConfig_Fecha"
+                    android:layout_below="@+id/tvIdioma"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="60dp"
+                    android:layout_marginTop="31dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="23/09/2015"
+                    android:textSize="16sp"
+                    android:id="@+id/tvConfig_FechaActual"
+                    android:layout_alignTop="@+id/tvConfig_Fecha"
+                    android:layout_centerHorizontal="true" />
+
+                <Button
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_Config_CambiarFecha"
+                    android:id="@+id/bt_evolucion_next"
+                    android:background="@android:color/transparent"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_alignBottom="@+id/tvConfig_FechaActual"
+                    android:layout_alignEnd="@+id/spnIdiomas"
+                    android:textAllCaps="false"
+                    android:layout_alignBaseline="@id/tvConfig_FechaActual"
+                   />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_Reiniciar"
+                    android:id="@+id/button2"
+
+                    android:background="@android:color/transparent"
+                    android:layout_below="@+id/tvConfig_Fecha"
+                    android:layout_alignStart="@+id/tvConfig_FechaActual"
+                    android:layout_toStartOf="@+id/bt_evolucion_next" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btInfoReiniciar"
+                    android:layout_alignTop="@+id/button2"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBottom="@+id/button2"
+                    android:layout_toEndOf="@+id/button2"
+                    android:src="@android:drawable/ic_dialog_info"
+                    android:backgroundTint="@android:color/transparent"
+                    android:focusable="true"
+                    android:tint="@color/_color_green_plain" />
+
+            </RelativeLayout>
+
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:name="com.fing.proingsoft.plainstock.Frag_Menu"
+                android:id="@+id/frag_menu_Preguntas"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="2"
+                tools:layout="@layout/fragment_menu" />
+
+
+        </LinearLayout>
+
+
+</RelativeLayout>

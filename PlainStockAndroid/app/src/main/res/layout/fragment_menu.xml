@@ -1,0 +1,215 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="com.fing.proingsoft.plainstock.Frag_Menu">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:weightSum="4">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/btPreguntas"
+            android:background="@color/_color_green_plain"
+            android:clickable="true"
+            android:focusable="true"
+            android:longClickable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/str_Preguntas"
+                android:id="@+id/txtTextoPreguntas"
+                android:textColor="@color/_selector_menu_tint"
+                android:duplicateParentState="true"
+                android:textSize="11sp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_alignParentBottom="true" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imgPreguntas"
+                android:src="@drawable/img_preguntas"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:clickable="false"
+                android:tint="@android:color/black"
+                android:layout_margin="10dp"
+                android:duplicateParentState="true"
+                android:layout_above="@id/txtTextoPreguntas"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/btEvolucion"
+            android:background="@color/_color_green_plain"
+            android:clickable="true"
+            android:focusable="true"
+            android:longClickable="false">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/str_evolucion"
+                android:id="@+id/tvTextoEvolucion"
+                android:textColor="@color/_selector_menu_tint"
+                android:duplicateParentState="true"
+                android:textSize="11sp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imgEvolucion"
+                android:layout_above="@id/tvTextoEvolucion"
+                android:src="@drawable/img_evolucion"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:clickable="false"
+                android:tint="@android:color/black"
+                android:layout_margin="10dp"
+                android:duplicateParentState="true"
+                android:layout_centerHorizontal="true" />
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/btDetalles"
+            android:background="@color/_color_green_plain"
+            android:clickable="true"
+            android:focusable="true"
+            android:longClickable="false">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/str_Detalles"
+                android:id="@+id/tvTextoDetalles"
+                android:textColor="@color/_selector_menu_tint"
+                android:duplicateParentState="true"
+                android:textSize="11sp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imgDetalles"
+                android:layout_alignParentTop="false"
+                android:src="@drawable/img_detalles"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:clickable="false"
+                android:tint="@android:color/black"
+                android:layout_margin="10dp"
+                android:layout_centerInParent="true"
+                android:layout_above="@id/tvTextoDetalles"
+                android:duplicateParentState="true"
+                />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/btConfig"
+            android:background="@color/_color_green_plain"
+            android:clickable="true"
+            android:focusable="true"
+            android:longClickable="false">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/str_Config"
+                android:id="@+id/tvTextoConfig"
+                android:textColor="@color/_selector_menu_tint"
+                android:duplicateParentState="true"
+                android:textSize="11sp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imgConfig"
+                android:layout_above="@id/tvTextoConfig"
+                android:src="@drawable/img_config"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:clickable="false"
+                android:tint="@android:color/black"
+                android:layout_margin="10dp"
+                android:duplicateParentState="true"
+                android:layout_centerHorizontal="true" />
+
+
+        </RelativeLayout>
+
+
+
+        <!--
+        <ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textOn="@string/str_Detalles"
+            android:textOff="@string/str_Detalles"
+            android:id="@+id/btDetalles"
+            android:layout_weight="1"
+            android:paddingTop="20dp"
+            android:textAllCaps="false"
+            android:textSize="10sp"
+            android:drawableTop="@drawable/img_detalles"
+            android:background="@color/_color_green_plain"
+            android:drawableTint="@color/_selector_menu_tint"
+            android:textColor="@color/_selector_menu_tint"
+            android:checked="false" />
+        -->
+
+        <!--<ToggleButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingTop="20dp"
+            android:id="@+id/btConfig"
+            android:textOn="@string/str_Config"
+            android:textOff="@string/str_Config"
+            android:textAllCaps="false"
+            android:textSize="10sp"
+            android:drawableTop="@drawable/img_config"
+            android:background="@color/_color_green_plain"
+            android:drawableTint="@color/_selector_menu_tint"
+            android:checked="false" />
+        -->
+    </LinearLayout>
+
+</FrameLayout>

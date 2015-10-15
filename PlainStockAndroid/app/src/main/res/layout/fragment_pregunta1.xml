@@ -1,0 +1,96 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="com.fing.proingsoft.plainstock.Pregunta1">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:id = "@+id/rlPreguntas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/str_pregDef"
+            android:id="@+id/tvPreguntas"
+            android:layout_gravity="center_horizontal|top"
+            android:textSize="18sp"
+            android:layout_below="@+id/btnReiniciar"
+            android:layout_centerHorizontal="true" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="65dp"
+            android:layout_below="@id/tvPreguntas"
+            android:layout_above="@+id/llBackNext"
+            android:id="@+id/lvRespuestas"
+            android:textSize="12sp"
+            android:layout_gravity="center_horizontal"
+            android:choiceMode="none"
+            tools:listitem="@layout/row_respuesta"/>
+
+
+
+        <LinearLayout
+            android:id="@+id/llBackNext"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|center">
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/img_left_blue"
+                android:id="@+id/btPrevQ"
+                android:layout_weight="1"
+                android:enabled="false"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+
+                android:id="@+id/_confirmar"
+                android:textSize="18sp"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="7dp" />
+
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/img_right_blue"
+                android:id="@+id/btNextQ"
+                android:onClick="back_listener"
+                android:layout_weight="1" />
+
+
+
+        </LinearLayout>
+
+
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reiniciar Preguntas"
+            android:id="@+id/btnReiniciar"
+            android:layout_marginTop="0dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+</FrameLayout>

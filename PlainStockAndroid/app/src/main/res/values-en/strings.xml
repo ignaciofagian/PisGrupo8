@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="str_Comienza"><![CDATA[Start living easily \n the world of the\n stock market]]></string>
+    <string name="str_Comenzar">Start</string>
+    <string name="str_Preguntas">Questions</string>
+    <string name="str_evolucion">Evolution</string>
+    <string name="str_Detalles">Details</string>
+    <string name="str_Config">Settings</string>
+    <string name="str_pregDef">No new questions</string>
+    <string name="str_Config_CambiarFecha">Change</string>
+
+    <string name="str_Idioma">Language</string>
+    <string name="title_activity_preguntas">Questions</string>
+    <string name="title_activity_pantalla_configuracion">Configuration</string>
+    <string name="str_Reiniciar">Reiniciar</string>
+
+
+    <string-array name="freq_notif_array">
+        <item>Often</item>
+        <item>Normal</item>
+        <item>Rare</item>
+    </string-array>
+</resources>

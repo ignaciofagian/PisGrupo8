@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">PlainStock</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="str_Comienza"><![CDATA[Comienza a vivir de\nmanera fácil el mundo del\nmercado de valores]]></string>
+    <string name="str_Comenzar">Comenzar</string>
+    <string name="title_activity_preguntas">Preguntas</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="str_Preguntas">Preguntas</string>
+    <string name="str_evolucion">Evolución</string>
+    <string name="str_Detalles">Detalles</string>
+    <string name="str_Config">Configuración</string>
+    <string name="str_pregDef">¿Qué pasará?</string>
+
+
+    <string name="TAG_NroRespuesta">""</string>
+    <string name="TAG_ID_Respuesta">""</string>
+    <string name="title_activity_actividad_con_menu_inf">ActividadConMenuInf</string>
+    <string name="title_activity_pantalla_configuracion">Configuración</string>
+    <string name="title_activity_evolucion">Evolucion</string>
+    <string name="str_Idioma">Idioma</string>
+    <string name="tvConfig_Fecha">Fecha</string>
+    <string name="str_Config_CambiarFecha">Cambiar</string>
+    <string name="str_Reiniciar">Reiniciar</string>
+
+    <string-array name="idiomas_array">
+        <item>English</item>
+        <item>Español</item>
+    </string-array>
+
+    <string-array name="freq_notif_array">
+        <item>Frecuente</item>
+        <item>Normal</item>
+        <item>Poca</item>
+    </string-array>
+    <string name="title_activity_detalles">Detalles</string>
+</resources>
