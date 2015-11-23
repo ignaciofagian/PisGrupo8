@@ -64,7 +64,7 @@ public class ChartDataApproximatorFilter: ChartDataBaseFilter
     
     /// Filters according to type. Uses the pre set set tolerance
     ///
-    /// - parameter points: the points to filter
+    /// :param: points the points to filter
     public override func filter(points: [ChartDataEntry]) -> [ChartDataEntry]
     {
         return filter(points, tolerance: tolerance)
@@ -72,8 +72,8 @@ public class ChartDataApproximatorFilter: ChartDataBaseFilter
     
     /// Filters according to type.
     ///
-    /// - parameter points: the points to filter
-    /// - parameter tolerance: the angle in degrees that will trigger the filtering
+    /// :param: points the points to filter
+    /// :param: tolerance the angle in degrees that will trigger the filtering
     public func filter(points: [ChartDataEntry], tolerance: Double) -> [ChartDataEntry]
     {
         if (tolerance <= 0)
@@ -124,10 +124,10 @@ public class ChartDataApproximatorFilter: ChartDataBaseFilter
     
     /// apply the Douglas-Peucker-Reduction to an ArrayList of Entry with a given epsilon (tolerance)
     ///
-    /// - parameter entries:
-    /// - parameter epsilon: as y-value
-    /// - parameter start:
-    /// - parameter end:
+    /// :param: entries
+    /// :param: epsilon as y-value
+    /// :param: start
+    /// :param: end
     private func algorithmDouglasPeucker(entries: [ChartDataEntry], epsilon: Double, start: Int, end: Int, inout keep: [Bool])
     {
         if (end <= start + 1)
@@ -140,12 +140,12 @@ public class ChartDataApproximatorFilter: ChartDataBaseFilter
         var maxDistIndex = Int(0)
         var distMax = Double(0.0)
         
-        let firstEntry = entries[start]
-        let lastEntry = entries[end]
+        var firstEntry = entries[start]
+        var lastEntry = entries[end]
         
         for (var i = start + 1; i < end; i++)
         {
-            let dist = calcAngleBetweenLines(firstEntry, end1: lastEntry, start2: firstEntry, end2: entries[i])
+            var dist = calcAngleBetweenLines(firstEntry, end1: lastEntry, start2: firstEntry, end2: entries[i])
             
             // keep the point with the greatest distance
             if (dist > distMax)
@@ -168,15 +168,15 @@ public class ChartDataApproximatorFilter: ChartDataBaseFilter
     
     /// calculate the distance between a line between two entries and an entry (point)
     ///
-    /// - parameter startEntry: line startpoint
-    /// - parameter endEntry: line endpoint
-    /// - parameter entryPoint: the point to which the distance is measured from the line
+    /// :param: startEntry line startpoint
+    /// :param: endEntry line endpoint
+    /// :param: entryPoint the point to which the distance is measured from the line
     private func calcPointToLineDistance(startEntry: ChartDataEntry, endEntry: ChartDataEntry, entryPoint: ChartDataEntry) -> Double
     {
-        let xDiffEndStart = Double(endEntry.xIndex) - Double(startEntry.xIndex)
-        let xDiffEntryStart = Double(entryPoint.xIndex) - Double(startEntry.xIndex)
+        var xDiffEndStart = Double(endEntry.xIndex) - Double(startEntry.xIndex)
+        var xDiffEntryStart = Double(entryPoint.xIndex) - Double(startEntry.xIndex)
         
-        let normalLength = sqrt((xDiffEndStart)
+        var normalLength = sqrt((xDiffEndStart)
             * (xDiffEndStart)
             + (endEntry.value - startEntry.value)
             * (endEntry.value - startEntry.value))
@@ -190,8 +190,8 @@ public class ChartDataApproximatorFilter: ChartDataBaseFilter
     /// Calculates the angle between two given lines. The provided entries mark the starting and end points of the lines.
     private func calcAngleBetweenLines(start1: ChartDataEntry, end1: ChartDataEntry, start2: ChartDataEntry, end2: ChartDataEntry) -> Double
     {
-        let angle1 = calcAngleWithRatios(start1, p2: end1)
-        let angle2 = calcAngleWithRatios(start2, p2: end2)
+        var angle1 = calcAngleWithRatios(start1, p2: end1)
+        var angle2 = calcAngleWithRatios(start2, p2: end2)
         
         return fabs(angle1 - angle2)
     }
@@ -199,16 +199,16 @@ public class ChartDataApproximatorFilter: ChartDataBaseFilter
     /// calculates the angle between two entries (points) in the chart taking ratios into consideration
     private func calcAngleWithRatios(p1: ChartDataEntry, p2: ChartDataEntry) -> Double
     {
-        let dx = Double(p2.xIndex) * Double(deltaRatio) - Double(p1.xIndex) * Double(deltaRatio)
-        let dy = p2.value * scaleRatio - p1.value * scaleRatio
+        var dx = Double(p2.xIndex) * Double(deltaRatio) - Double(p1.xIndex) * Double(deltaRatio)
+        var dy = p2.value * scaleRatio - p1.value * scaleRatio
         return atan2(Double(dy), dx) * ChartUtils.Math.RAD2DEG
     }
     
     // calculates the angle between two entries (points) in the chart
     private func calcAngle(p1: ChartDataEntry, p2: ChartDataEntry) -> Double
     {
-        let dx = p2.xIndex - p1.xIndex
-        let dy = p2.value - p1.value
+        var dx = p2.xIndex - p1.xIndex
+        var dy = p2.value - p1.value
         return atan2(Double(dy), Double(dx)) * ChartUtils.Math.RAD2DEG
     }
 }

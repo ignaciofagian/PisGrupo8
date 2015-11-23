@@ -13,7 +13,7 @@ import Foundation
 import CoreGraphics
 import UIKit
 
-public class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet
+public class BubbleChartDataSet: BarLineScatterCandleChartDataSet
 {
     internal var _xMax = Double(0.0)
     internal var _xMin = Double(0.0)
@@ -28,7 +28,7 @@ public class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet
         super.setColor(color.colorWithAlphaComponent(alpha))
     }
     
-    internal override func calcMinMax(start start: Int, end: Int)
+    internal override func calcMinMax(#start: Int, end: Int)
     {
         if (yVals.count == 0)
         {

@@ -14,7 +14,7 @@
 
 import Foundation
 
-public class ChartDataEntry: NSObject
+public class ChartDataEntry: NSObject, Equatable
 {
     /// the actual value (y axis)
     public var value = Double(0.0)
@@ -25,7 +25,7 @@ public class ChartDataEntry: NSObject
     /// optional spot for additional data this Entry represents
     public var data: AnyObject?
     
-    public override required init()
+    public override init()
     {
         super.init()
     }
@@ -90,12 +90,10 @@ public class ChartDataEntry: NSObject
     
     public func copyWithZone(zone: NSZone) -> AnyObject
     {
-        let copy = self.dynamicType.init()
-        
+        var copy = self.dynamicType.allocWithZone(zone) as ChartDataEntry
         copy.value = value
         copy.xIndex = xIndex
         copy.data = data
-        
         return copy
     }
 }

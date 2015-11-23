@@ -1,6 +1,11 @@
 package datatypes;
 
-public class DTEstado {
+import java.io.Serializable;
+
+public class DTEstado implements Serializable  {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String estado;
 	
 	public DTEstado()

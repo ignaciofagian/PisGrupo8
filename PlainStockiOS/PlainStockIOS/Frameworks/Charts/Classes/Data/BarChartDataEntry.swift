@@ -24,11 +24,6 @@ public class BarChartDataEntry: ChartDataEntry
     /// the sum of all positive values this entry (if stacked) contains
     private var _positiveSum: Double = 0.0
     
-    public required init()
-    {
-        super.init()
-    }
-    
     /// Constructor for stacked bar entries.
     public init(values: [Double], xIndex: Int)
     {
@@ -75,13 +70,13 @@ public class BarChartDataEntry: ChartDataEntry
         return remainder
     }
     
-    /// - returns: the sum of all negative values this entry (if stacked) contains. (this is a positive number)
+    /// :returns: the sum of all negative values this entry (if stacked) contains. (this is a positive number)
     public var negativeSum: Double
     {
         return _negativeSum
     }
     
-    /// - returns: the sum of all positive values this entry (if stacked) contains.
+    /// :returns: the sum of all positive values this entry (if stacked) contains.
     public var positiveSum: Double
     {
         return _positiveSum
@@ -136,7 +131,7 @@ public class BarChartDataEntry: ChartDataEntry
     
     public override func copyWithZone(zone: NSZone) -> AnyObject
     {
-        let copy = super.copyWithZone(zone) as! BarChartDataEntry
+        var copy = super.copyWithZone(zone) as! BarChartDataEntry
         copy._values = _values
         copy.value = value
         copy._negativeSum = _negativeSum
@@ -145,8 +140,8 @@ public class BarChartDataEntry: ChartDataEntry
     
     /// Calculates the sum across all values of the given stack.
     ///
-    /// - parameter vals:
-    /// - returns:
+    /// :param: vals
+    /// :returns:
     private static func calcSum(vals: [Double]?) -> Double
     {
         if vals == nil

@@ -7,13 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BLController.h"
 
-@interface MPSDetailTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, BLControllerDelegate>
+@interface MPSDetailTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property NSMutableArray  *balanceHistory;
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UILabel *momentLabel;
-@property (weak, nonatomic) IBOutlet UILabel *balanceLabel;
+//@property NSMutableData  *data;
 
 @end

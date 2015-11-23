@@ -16,9 +16,15 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
+import ejb.IEjbAlgoritmo;
+import ejb.IEjbCalculoSaldoHist;
 import ejb.IEjbCliente;
 import ejb.IEjbPaquete;
+import interprete.IInterpreter;
+import interprete.InterpreterController;
 import model.ClientePaquete;
 import model.PaqueteAlgoritmico;
 
@@ -33,6 +39,13 @@ public class TareaAlgoritmos {
 
 	@EJB
 	private IEjbCliente ejbCliente;
+	
+	@EJB
+	private IEjbCalculoSaldoHist ejbSH;
+	
+
+	@EJB
+	private IEjbAlgoritmo ejbAlgoritmo;
 	
 	@Resource
 	private SessionContext context;
@@ -76,15 +89,31 @@ public class TareaAlgoritmos {
 		    }
 	}
 
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public void ejecutarAlgoritmos() {
 		List<PaqueteAlgoritmico> paquetes = ejbPaquete.obtenerPaquetesAlgoritmicos();
 		System.out.println("Timer: Ejecutando algoritmos");
 		for (PaqueteAlgoritmico pa : paquetes) {
-			if (pa.getAlgoritmo().equals("Algoritmo1"))
-				Algoritmo1(pa);
-			if (pa.getAlgoritmo().equals("Algoritmo2"))
-				Algoritmo2(pa);
+			long idPaquete = pa.getId();
+		    String algorithm = pa.getAlgoritmo();
+		    if (pa.isRecalcular()){
+		    	ejbSH.crearHistoriaDiariaAlgoritmo(pa);
+		    	ejbSH.calcularEvolucionAlgoritmo(pa);
+		    }
+		    
+		    IInterpreter inter = new InterpreterController();
+		    inter.setEJBAlgoritmo(ejbAlgoritmo);
+		    try{
+			    inter.evaluate(idPaquete, algorithm);
+		    }
+		    catch(Exception e){
+		    	
+			    System.out.println("TareaAlgo " + e.getMessage());
+			    System.out.println("TareaAlgo " +"Error en algoritmo " + pa.getNombre() + " algo: " + pa.getAlgoritmo());
+			    
+		  }	
 		}
+		
 	}
 
 	public void Algoritmo1(PaqueteAlgoritmico pa) {

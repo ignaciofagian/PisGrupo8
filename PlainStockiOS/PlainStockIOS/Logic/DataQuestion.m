@@ -11,10 +11,35 @@
 
 @implementation DataQuestion
 
-- (id)init {
+
+- (id)initWithID:(NSString*)questionID textEng:(NSString *)englishText textSpa:(NSString *)spanishText answers:(NSArray*)answers selectedAnswer:(short)selectedAnswer
+{
     self = [super init];
-    _selectedAnswer = -1;
+    if (self) {
+        // Any custom setup work goes here
+        _idQuestion = questionID;
+        _textEng = englishText;
+        _textSpa = spanishText;
+        _answers = answers;
+        _selectedAnswer = selectedAnswer;
+    }
     return self;
 }
+
+
+- (id)initWithID:(NSString*)questionID textEng:(NSString *)englishText textSpa:(NSString *)spanishText answers:(NSArray*)answers
+{
+    self = [super init];
+    if (self) {
+        // Any custom setup work goes here
+        _idQuestion = questionID;
+        _textEng = englishText;
+        _textSpa = spanishText;
+        _answers = answers;
+        _selectedAnswer = -1;
+    }
+    return self;
+}
+
 
 @end

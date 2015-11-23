@@ -64,7 +64,7 @@ public class SaldoSplitTest {
 			}
 		}
 
-		@Override
+		
 		public double getAdjFactor(Calendar t1, Calendar t2, long accionId) {
 
 			Historico h1 = findHistorico(accionId, t1);

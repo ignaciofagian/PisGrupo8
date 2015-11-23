@@ -19,14 +19,18 @@ public class PlainStockDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //BORRAR
-        String sql0;
-
+        String sql;
         //Crear la base de datos
-        String sql= "create table saldo_table("+
+        sql= "create table saldo_table("+
                 "id_saldo integer primary key autoincrement,"+
                 "date_saldo datetime not null,"+
                 "saldo_saldo integer not null"+
+                ")";
+        db.execSQL(sql);
+        db.execSQL("CREATE INDEX date_saldo_idx ON saldo_table(date_saldo); ");
+        sql= "create table conf_table("+
+                "modo_conf integer,"+
+                "date_conf datetime"+
                 ")";
         db.execSQL(sql);
     }

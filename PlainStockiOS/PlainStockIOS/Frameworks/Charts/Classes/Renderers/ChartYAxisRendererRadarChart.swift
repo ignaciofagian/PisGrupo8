@@ -26,15 +26,15 @@ public class ChartYAxisRendererRadarChart: ChartYAxisRenderer
         _chart = chart
     }
  
-    public override func computeAxis(yMin yMin: Double, yMax: Double)
+    public override func computeAxis(#yMin: Double, yMax: Double)
     {
         computeAxisValues(min: yMin, max: yMax)
     }
     
     internal override func computeAxisValues(min yMin: Double, max yMax: Double)
     {
-        let labelCount = _yAxis.labelCount
-        let range = abs(yMax - yMin)
+        var labelCount = _yAxis.labelCount
+        var range = abs(yMax - yMin)
         
         if (labelCount == 0 || range <= 0)
         {
@@ -42,10 +42,10 @@ public class ChartYAxisRendererRadarChart: ChartYAxisRenderer
             return
         }
         
-        let rawInterval = range / Double(labelCount)
+        var rawInterval = range / Double(labelCount)
         var interval = ChartUtils.roundToNextSignificant(number: Double(rawInterval))
-        let intervalMagnitude = pow(10.0, round(log10(interval)))
-        let intervalSigDigit = Int(interval / intervalMagnitude)
+        var intervalMagnitude = pow(10.0, round(log10(interval)))
+        var intervalSigDigit = Int(interval / intervalMagnitude)
         
         if (intervalSigDigit > 5)
         {
@@ -78,93 +78,79 @@ public class ChartYAxisRendererRadarChart: ChartYAxisRenderer
                 v += step
             }
             
-        }
-        else
-        {
+        } else {
             // no forced count
             
-        // clean old values
-        if (_yAxis.entries.count > 0)
-        {
-            _yAxis.entries.removeAll(keepCapacity: false)
-        }
-        
-        // if the labels should only show min and max
-        if (_yAxis.isShowOnlyMinMaxEnabled)
-        {
-            _yAxis.entries = [Double]()
-            _yAxis.entries.append(yMin)
-            _yAxis.entries.append(yMax)
-        }
-        else
-        {
-                let rawCount = Double(yMin) / interval
-                var first = rawCount < 0.0 ? floor(rawCount) * interval : ceil(rawCount) * interval;
+            // clean old values
+            if (_yAxis.entries.count > 0)
+            {
+                _yAxis.entries.removeAll(keepCapacity: false)
+            }
             
-                if (first < yMin && _yAxis.isStartAtZeroEnabled)
-                { // Force the first label to be at the 0 (or smallest negative value)
-                    first = yMin
+            // if the labels should only show min and max
+            if (_yAxis.isShowOnlyMinMaxEnabled)
+            {
+                _yAxis.entries = [Double]()
+                _yAxis.entries.append(yMin)
+                _yAxis.entries.append(yMax)
+            }
+            else
+            {
+                var first = ceil(Double(yMin) / interval) * interval
+                
+                if (first == 0.0)
+                { // Fix for IEEE negative zero case (Where value == -0.0, and 0.0 == -0.0)
+                    first = 0.0
                 }
                 
-            if (first == 0.0)
-            { // Fix for IEEE negative zero case (Where value == -0.0, and 0.0 == -0.0)
-                first = 0.0
+                var last = ChartUtils.nextUp(floor(Double(yMax) / interval) * interval)
+                
+                var f: Double
+                var i: Int
+                var n = 0
+                for (f = first; f <= last; f += interval)
+                {
+                    ++n
+                }
+                
+                if (isnan(_yAxis.customAxisMax))
+                {
+                    n += 1
+                }
+                
+                if (_yAxis.entries.count < n)
+                {
+                    // Ensure stops contains at least numStops elements.
+                    _yAxis.entries = [Double](count: n, repeatedValue: 0.0)
+                }
+                
+                for (f = first, i = 0; i < n; f += interval, ++i)
+                {
+                    _yAxis.entries[i] = Double(f)
+                }
             }
-            
-            let last = ChartUtils.nextUp(floor(Double(yMax) / interval) * interval)
-            
-            var f: Double
-            var i: Int
-            var n = 0
-            for (f = first; f <= last; f += interval)
-            {
-                ++n
-            }
-            
-            if (isnan(_yAxis.customAxisMax))
-            {
-                n += 1
-            }
-
-            if (_yAxis.entries.count < n)
-            {
-                // Ensure stops contains at least numStops elements.
-                _yAxis.entries = [Double](count: n, repeatedValue: 0.0)
-            }
-
-            for (f = first, i = 0; i < n; f += interval, ++i)
-            {
-                _yAxis.entries[i] = Double(f)
-            }
-        }
         }
         
-        if !_yAxis.isStartAtZeroEnabled && _yAxis.entries[0] < yMin
-        {
-            // If startAtZero is disabled, and the first label is lower that the axis minimum,
-            // Then adjust the axis minimum
-            _yAxis.axisMinimum = _yAxis.entries[0]
-        }
         _yAxis.axisMaximum = _yAxis.entries[_yAxis.entryCount - 1]
         _yAxis.axisRange = abs(_yAxis.axisMaximum - _yAxis.axisMinimum)
     }
     
-    public override func renderAxisLabels(context context: CGContext?)
+    public override func renderAxisLabels(#context: CGContext)
     {
         if (!_yAxis.isEnabled || !_yAxis.isDrawLabelsEnabled)
         {
             return
         }
         
-        let labelFont = _yAxis.labelFont
-        let labelTextColor = _yAxis.labelTextColor
+        var labelFont = _yAxis.labelFont
+        var labelTextColor = _yAxis.labelTextColor
         
-        let center = _chart.centerOffsets
-        let factor = _chart.factor
+        var center = _chart.centerOffsets
+        var factor = _chart.factor
         
-        let labelCount = _yAxis.entryCount
+        var labelCount = _yAxis.entryCount
         
-        let labelLineHeight = _yAxis.labelFont.lineHeight
+        var labelLineHeight = _yAxis.labelFont.lineHeight
         
         for (var j = 0; j < labelCount; j++)
         {
@@ -173,17 +159,17 @@ public class ChartYAxisRendererRadarChart: ChartYAxisRenderer
                 break
             }
             
-            let r = CGFloat(_yAxis.entries[j] - _yAxis.axisMinimum) * factor
+            var r = CGFloat(_yAxis.entries[j] - _yAxis.axisMinimum) * factor
             
-            let p = ChartUtils.getPosition(center: center, dist: r, angle: _chart.rotationAngle)
+            var p = ChartUtils.getPosition(center: center, dist: r, angle: _chart.rotationAngle)
             
-            let label = _yAxis.getFormattedLabel(j)
+            var label = _yAxis.getFormattedLabel(j)
             
             ChartUtils.drawText(context: context, text: label, point: CGPoint(x: p.x + 10.0, y: p.y - labelLineHeight), align: .Left, attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
         }
     }
     
-    public override func renderLimitLines(context context: CGContext?)
+    public override func renderLimitLines(#context: CGContext)
     {
         var limitLines = _yAxis.limitLines
         
@@ -194,21 +180,16 @@ public class ChartYAxisRendererRadarChart: ChartYAxisRenderer
         
         CGContextSaveGState(context)
         
-        let sliceangle = _chart.sliceAngle
+        var sliceangle = _chart.sliceAngle
         
         // calculate the factor that is needed for transforming the value to pixels
-        let factor = _chart.factor
+        var factor = _chart.factor
         
-        let center = _chart.centerOffsets
+        var center = _chart.centerOffsets
         
         for (var i = 0; i < limitLines.count; i++)
         {
-            let l = limitLines[i]
-            
-            if !l.isEnabled
-            {
-                continue
-            }
+            var l = limitLines[i]
             
             CGContextSetStrokeColorWithColor(context, l.lineColor.CGColor)
             CGContextSetLineWidth(context, l.lineWidth)
@@ -221,13 +202,13 @@ public class ChartYAxisRendererRadarChart: ChartYAxisRenderer
                 CGContextSetLineDash(context, 0.0, nil, 0)
             }
             
-            let r = CGFloat(l.limit - _chart.chartYMin) * factor
+            var r = CGFloat(l.limit - _chart.chartYMin) * factor
             
             CGContextBeginPath(context)
             
             for (var j = 0, count = _chart.data!.xValCount; j < count; j++)
             {
-                let p = ChartUtils.getPosition(center: center, dist: r, angle: sliceangle * CGFloat(j) + _chart.rotationAngle)
+                var p = ChartUtils.getPosition(center: center, dist: r, angle: sliceangle * CGFloat(j) + _chart.rotationAngle)
                 
                 if (j == 0)
                 {

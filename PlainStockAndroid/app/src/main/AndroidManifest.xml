@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.fing.proingsoft.plainstock" >
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    package="com.fing.proingsoft.plainstock"
+    android:versionCode="2"
+    android:versionName="1.0">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -20,24 +23,31 @@
         </activity>
         <activity
             android:name=".Preguntas"
-            android:configChanges="locale" >
-            android:label="@string/title_activity_preguntas" >
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_preguntas"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".PantallaConfiguracion"
-            android:configChanges="locale"
-            android:label="@string/title_activity_pantalla_configuracion" >
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_pantalla_configuracion"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".Evolucion"
-            android:configChanges="locale"
+            android:configChanges=""
             android:label="@string/title_activity_evolucion" >
         </activity>
         <activity
             android:name=".Detalles"
-            android:label="@string/title_activity_detalles" >
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_detalles"
+            android:screenOrientation="portrait" >
         </activity>
-
+        <activity
+            android:name=".FechaSistema"
+            android:label="@string/title_activity_fecha_sistema" >
+        </activity>
     </application>
 
 </manifest>

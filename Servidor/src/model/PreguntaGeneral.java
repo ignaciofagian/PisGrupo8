@@ -12,6 +12,8 @@ import javax.persistence.Table;
 public class PreguntaGeneral extends Pregunta {
 
 	private static final long serialVersionUID = 1L;
+	
+	private boolean deprecated = false;
 
 //	@OneToMany(cascade=CascadeType.ALL)
 //	@JoinTable(name="PregGeneralHabilita",
@@ -38,4 +40,14 @@ public class PreguntaGeneral extends Pregunta {
 		RespuestaGeneral r = new RespuestaGeneral(eng, espa, this, categorias);
 		this.getRespuestas().add(r);
 	}
+
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+
+	public void setDeprecated(boolean deprecated) {
+		this.deprecated = deprecated;
+	}
+	
+	
 }

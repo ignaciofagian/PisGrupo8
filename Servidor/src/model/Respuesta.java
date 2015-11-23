@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -28,7 +29,7 @@ public class Respuesta implements Serializable {
 	@Column(name = "IDResp")
 	private Long id;
 
-	@OneToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="IDPreg",insertable=true,
 	        updatable=true,nullable=false)
 	private Pregunta pregunta;

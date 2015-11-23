@@ -2,14 +2,17 @@ package tasks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
@@ -21,10 +24,13 @@ import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.security.plugins.TmpFilePassword;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import ejb.EjbPaquete;
 import ejb.EjbServidor;
@@ -42,25 +48,39 @@ import yahoofinance.histquotes.Interval;
 @Singleton
 @Startup
 public class TareaObtenerValoresYahoo {
-	
-	private String nombreTimer = "EjecucionPedidoValoresYahoo";
-	
+	@Resource
+	private SessionContext context;
+
 	@EJB
 	private IEjbPaquete ejbPaquete;
 	
 	@EJB private IEjbServidor ejbServidor;
 	
+	@PersistenceContext(unitName = "Servidor")
+	private EntityManager em;
 	
-	@Resource
-	private SessionContext context;
+	
+	private final String nombreTimer = "EjecucionPedidoValoresYahoo";
+	
+	private Logger log = LogManager.getLogger(nombreTimer);
+	private boolean corriendo ;
 
 	private long intervaloActualDeEjecucion;
+	private static Calendar fechaDatosHistoricos = new GregorianCalendar(2010, Calendar.JANUARY,1);
 	
-    public void stop(String timerName) {
+	
+	
+    public static Calendar getFechaDatosHistoricos() {
+		return fechaDatosHistoricos;
+	}
+
+
+
+	public void stop(String timerName) {
 
     }
     
-    private boolean cargoDatosHistoricos = true;
+  
 
 	@PostConstruct
 	public void initialize() 
@@ -74,13 +94,16 @@ public class TareaObtenerValoresYahoo {
 	        	t.cancel();
 	        }
 	    }
-		
+		corriendo = false;
 		this.intervaloActualDeEjecucion = obtenerPeriodoDeEjecucionDeSolicitud();
+		this.fechaDatosHistoricos = obtenerFechaDatosHistoricos();
 	
 		crearTimer(5000);
 		}
 	
-	
+
+
+
 	private void crearTimer(long proximaEjecucion){
 		TimerConfig config = new TimerConfig();
 		config.setPersistent(false);
@@ -93,95 +116,40 @@ public class TareaObtenerValoresYahoo {
 	@Timeout
 	public void onEventoTimer(Timer timer) 
 	{
+		if (!corriendo){
+			corriendo = true;
+			try {
+				log.info("Se ejecuta actualizacion de acciones Yahoo!");
+				ejbPaquete.pedidoDeValoresYahoo(true,fechaDatosHistoricos);
+				long valorPeriodoProperties = obtenerPeriodoDeEjecucionDeSolicitud();
+				//System.out.println("este es el valor del timer: ->>" + valorPeriodoProperties);
+				if (valorPeriodoProperties != this.intervaloActualDeEjecucion) {
+					// Cambiaron el tiempo de ejecucion
+					timer.cancel();
+					this.intervaloActualDeEjecucion = valorPeriodoProperties;
+
+					crearTimer(this.intervaloActualDeEjecucion);
+				} 
+			} finally {
+				corriendo = false;
+			}
+		}
+		else{
+			log.warn("Todavia esta corriendo la tarea anterior!!!");
+		}
 		
-		//System.out.println("Se ejecuta actualizacion de acciones Yahoo!");
-		pedidoDeValoresYahoo();
-		long valorPeriodoProperties = obtenerPeriodoDeEjecucionDeSolicitud();
-		//System.out.println("este es el valor del timer: ->>" + valorPeriodoProperties);
-		if (valorPeriodoProperties != this.intervaloActualDeEjecucion) {
-			// Cambiaron el tiempo de ejecucion
-			timer.cancel();
-			this.intervaloActualDeEjecucion = valorPeriodoProperties;
-
-			crearTimer(this.intervaloActualDeEjecucion);
-		}
 	}
+
+	private Set<String> obtenerAccionesHistorico(Calendar desde){
+		// mejorar, asumo que si no hay datos entre la fecha de inicio y 4 disas depsues tengo que pedirlo
+		Calendar hasta = (Calendar)desde.clone();
+		hasta.add(Calendar.DAY_OF_YEAR, 4);
+		return ejbPaquete.symAccionesEnHistorico(desde, hasta);
+	}
+	
 
 	
 	
-	public void pedidoDeValoresYahoo() {
-		boolean simularSiCerrado = true;
-		List<Accion> accionesDelSistema = ejbPaquete.obtenerConjuntoAccionesUsadasPorPaquetes();
-		int minutos = 0;
-		if (!ejbServidor.estaAbiertoStockExchangeAhora() && simularSiCerrado) {
-			minutos = Calendar.getInstance().get(Calendar.MINUTE);
-
-		}
-		// La idea es el ultimo de dato obtenido por yahoo se actualizan en la
-		// tabla de Accion
-		// El valor anterior que tenia la tabla Accion, se pasa para Historico
-		// con fecha = fechaActual - TiempoDeTimer
-
-		List<String> symbols = new ArrayList<String>();
-		Map<String, Accion> mapAcciones = new HashMap<String, Accion>();
-		for (Accion acc : accionesDelSistema) {
-			symbols.add(acc.getSymbol());
-			mapAcciones.put(acc.getSymbol(), acc);
-		}
-
-		// Obtengo el valor actual de Yahoo en batchs de 200 elementos
-		Map<String, Stock> yahooStocks = new HashMap<String, Stock>();
-		try {
-			for (int i = 0; i < symbols.size(); i += 200) {
-				int tope = Math.min(i + 200, symbols.size());
-				List<String> sublista = symbols.subList(i, tope);
-				String[] pedido = new String[sublista.size()];
-				sublista.toArray(pedido);
-				Map<String, Stock> respuesta;
-				if (cargoDatosHistoricos) {
-					Calendar from = new GregorianCalendar(2015, Calendar.OCTOBER, 7);
-					respuesta = YahooFinance.get(pedido, from, Interval.DAILY);
-				} else {
-					respuesta = YahooFinance.get(pedido);
-				}
-				yahooStocks.putAll(respuesta);
-			}
-
-		} catch (IOException e) {
-			System.out.println("Error: Al obtener datos de yahoo");
-			e.printStackTrace();
-		}
-		double simulacion = 1 + (minutos % 60) / 50.0; // 100% - 220% del valor
-														// real
-		System.out.println("Simulacion x" + simulacion);
-
-		for (String symbol : yahooStocks.keySet()) {
-			// Dejo que el ejb se encarge de tocar la BD
-			Accion acc = mapAcciones.get(symbol);
-			Stock stock = yahooStocks.get(symbol);
-			List<Historico> antiguos = new ArrayList<Historico>();
-			if (cargoDatosHistoricos) {
-				try {
-					for (HistoricalQuote hq : stock.getHistory()) {
-						Historico h = new Historico(acc, hq.getAdjClose().doubleValue(), hq.getClose().doubleValue(),
-								hq.getDate().getTime());
-						antiguos.add(h);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			ejbPaquete.actualizarAccionDesdeYahooYAgregarHistorico(acc,
-					stock.getQuote().getPrice().doubleValue() * simulacion, antiguos);
-
-		}
-
-		ejbPaquete.actualizarValorPaquetesAlgoritmicos();
-		ejbServidor.actualizarSaldosAll();
-		cargoDatosHistoricos = false;
-	}
 	
 	public long obtenerPeriodoDeEjecucionDeSolicitud() {
 		Properties props = new Properties();
@@ -208,6 +176,34 @@ public class TareaObtenerValoresYahoo {
 	}
 	
 	
+	private Calendar obtenerFechaDatosHistoricos() {
+		Properties props = new Properties();
+		InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("servidor.properties");
+
+		if (inputStream == null) 
+		{
+		//	System.out.println("Error al leer periodo de ejecucion de PROPERTIES");
+		} else 
+		{
+			try 
+			{
+				props.load(inputStream);
+				String peridoString = props.getProperty("fechaInicioDatosHistoricos");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				Date d = sdf.parse(peridoString);
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(d);
+				return  cal;
+				
+			} catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return new GregorianCalendar(2010,Calendar.JANUARY,4);
+	}
+
 
 		
 		

@@ -28,26 +28,29 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
-            android:text="Moment"
+            android:text="@string/str_detalles_moment"
             android:textSize="16sp"
             android:id="@+id/textView2"
             android:gravity="center|right"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="20dp" />
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="28dp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="$Balance"
+            android:text="Balance  USD"
             android:textSize="16sp"
             android:id="@+id/textView3"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center_vertical|left"
-            android:layout_marginLeft="20dp" />
+            android:layout_marginLeft="94dp"
+           />
 
 
     </LinearLayout>

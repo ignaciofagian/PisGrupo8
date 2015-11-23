@@ -18,92 +18,118 @@
             android:weightSum="10">
 
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:orientation="vertical"
                 android:layout_height="0dp"
-                android:layout_weight="8">
+                android:layout_weight="8"
+                android:weightSum="9">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/str_Idioma"
-                    android:id="@+id/tvIdioma"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="52dp"
-                    android:layout_marginLeft="60dp"
-                    android:gravity="center_vertical" />
+                <RelativeLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3">
 
-                <Spinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:id="@+id/spnIdiomas"
-                    android:layout_toRightOf="@+id/tvIdioma"
-                    android:layout_alignBottom="@+id/tvIdioma"
-                    android:layout_marginLeft="52dp"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/str_Idioma"
+                        android:id="@+id/tvIdioma"
+                        android:gravity="center_vertical"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="55dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentStart="true" />
 
-                    />
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/spnIdiomas"
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Fecha"
-                    android:id="@+id/tvConfig_Fecha"
-                    android:layout_below="@+id/tvIdioma"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginLeft="60dp"
-                    android:layout_marginTop="31dp" />
+                        android:layout_gravity="center"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/tvIdioma"
+                        android:layout_marginStart="39dp"
+                        android:layout_marginRight="10dp" />
+                </RelativeLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="23/09/2015"
-                    android:textSize="16sp"
-                    android:id="@+id/tvConfig_FechaActual"
-                    android:layout_alignTop="@+id/tvConfig_Fecha"
-                    android:layout_centerHorizontal="true" />
+                <RelativeLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3">
 
-                <Button
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/str_Config_CambiarFecha"
-                    android:id="@+id/bt_evolucion_next"
-                    android:background="@android:color/transparent"
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_alignBottom="@+id/tvConfig_FechaActual"
-                    android:layout_alignEnd="@+id/spnIdiomas"
-                    android:textAllCaps="false"
-                    android:layout_alignBaseline="@id/tvConfig_FechaActual"
-                   />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/str_config_date"
+                        android:id="@+id/tvConfig_Fecha"
+                        android:layout_gravity="center"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginLeft="10dp" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/str_Reiniciar"
-                    android:id="@+id/button2"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="23/09/2015"
+                        android:textSize="16sp"
+                        android:id="@+id/tvConfig_FechaActual"
+                        android:layout_gravity="center"
+                        android:layout_alignTop="@+id/tvConfig_Fecha"
+                        android:layout_toEndOf="@+id/tvConfig_Fecha"
+                        android:layout_marginLeft="10dp" />
 
-                    android:background="@android:color/transparent"
-                    android:layout_below="@+id/tvConfig_Fecha"
-                    android:layout_alignStart="@+id/tvConfig_FechaActual"
-                    android:layout_toStartOf="@+id/bt_evolucion_next" />
+                    <Button
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_Config_CambiarFecha"
+                        android:id="@+id/bt_config_cambiarFecha"
+                        android:background="@android:color/transparent"
+                        style="?android:attr/buttonStyleSmall"
+                        android:textAllCaps="false"
+                        android:layout_gravity="center"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/tvConfig_FechaActual"
+                        android:layout_marginStart="15dp" />
+                </RelativeLayout>
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btInfoReiniciar"
-                    android:layout_alignTop="@+id/button2"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignBottom="@+id/button2"
-                    android:layout_toEndOf="@+id/button2"
-                    android:src="@android:drawable/ic_dialog_info"
-                    android:backgroundTint="@android:color/transparent"
-                    android:focusable="true"
-                    android:tint="@color/_color_green_plain" />
+                <RelativeLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3">
 
-            </RelativeLayout>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_Reiniciar"
+                        android:id="@+id/bt_config_reiniciar"
+
+                        android:background="@android:color/transparent"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="77dp" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btInfoReiniciar"
+                        android:src="@android:drawable/ic_dialog_info"
+                        android:backgroundTint="@android:color/transparent"
+                        android:focusable="true"
+                        android:tint="@color/_color_green_plain"
+                        android:layout_marginLeft="0dp"
+                        android:layout_alignTop="@+id/bt_config_reiniciar"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="60dp" />
+                </RelativeLayout>
+
+            </LinearLayout>
 
             <fragment
                 android:layout_width="match_parent"

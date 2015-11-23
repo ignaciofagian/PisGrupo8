@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="false"
+	xmlns:log4j='http://jakarta.apache.org/log4j/'>
+  		<!--  https://arviarya.wordpress.com/2012/11/09/log4j-for-high-performance-application/ -->
+  
+	  <appender name="mainAppender" class="org.apache.log4j.rolling.RollingFileAppender">
+	  
+	 	<!-- para el rollingfileappender comun que actua por size
+	 	<appender name="mainAppender" class="org.apache.log4j.RollingFileAppender">
+	 	<param name="File" value="../log/plainstock.log" />
+	 		 <param name="MaxFileSize" value="100MB" />
+	 		<param name="MaxBackupIndex" value="20"/>  -->
+	 	<param name="Append" value="true" />
+
+	 	<param name="ImmediateFlush" value="false" />
+	 	<param name="BufferedIO" value="true" />
+	 	<param name="BufferSize" value="16" /> <!-- In KB, Default is 8KB -->
+	 	<layout class="org.apache.log4j.PatternLayout">
+	        <param name="ConversionPattern" value="%d %X{user}[%t] %-5p - %m%n" />
+	 	</layout>
+	 	 <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+	 	 	<!--  https://logging.apache.org/log4j/extras/apidocs/org/apache/log4j/rolling/RollingFileAppender.html -->
+ 			<param name="FileNamePattern" value="log/plainstock.%d.log.gz"/>
+ 		</rollingPolicy>
+	 </appender>
+	  
+	   <appender name="asyncAppender" class="org.apache.log4j.AsyncAppender"> 
+	 		<param name="BufferSize" value="128" />
+	 		<param name="Blocking" value="true" />
+	 	<appender-ref ref="mainAppender" /> 
+	 </appender>
+  
+    <root>
+    	<level value="TRACE" />
+    	<!--  <appender-ref ref="asyncAppender"/> -->
+      	<appender-ref ref="mainAppender"/>
+    </root>
+    
+</log4j:configuration>

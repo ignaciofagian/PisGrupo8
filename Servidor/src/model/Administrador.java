@@ -21,19 +21,21 @@ public class Administrador extends Usuario {
 		  super();
 	}
 
-	public String get_nombre() {
+	public String getNombre() {
 		return nombre;
 	}
 
-	public void set_nombre(String _nombre) {
-		this.nombre = _nombre;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 
-	public String get_password() {
+	public String getPassword() {
 		return password;
 	}
 
-	public void set_password(String _password) {
-		this.password = _password;
+	public void setPassword(String password) {
+		this.password = password;
 	}
+
+
 }

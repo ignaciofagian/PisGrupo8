@@ -23,8 +23,7 @@ public class LineRadarChartDataSet: LineScatterCandleChartDataSet
     public var drawFilledEnabled = false
     
     /// line width of the chart (min = 0.2, max = 10)
-    /// 
-    /// **default**: 1
+    /// :default: 1
     public var lineWidth: CGFloat
     {
         get
@@ -33,17 +32,14 @@ public class LineRadarChartDataSet: LineScatterCandleChartDataSet
         }
         set
         {
-            if (newValue < 0.2)
+            _lineWidth = newValue
+            if (_lineWidth < 0.2)
             {
-                _lineWidth = 0.2
+                _lineWidth = 0.5
             }
-            else if (newValue > 10.0)
+            if (_lineWidth > 10.0)
             {
                 _lineWidth = 10.0
-            }
-            else
-            {
-                _lineWidth = newValue
             }
         }
     }
@@ -57,7 +53,7 @@ public class LineRadarChartDataSet: LineScatterCandleChartDataSet
     
     public override func copyWithZone(zone: NSZone) -> AnyObject
     {
-        let copy = super.copyWithZone(zone) as! LineRadarChartDataSet
+        var copy = super.copyWithZone(zone) as! LineRadarChartDataSet
         copy.fillColor = fillColor
         copy._lineWidth = _lineWidth
         copy.drawFilledEnabled = drawFilledEnabled

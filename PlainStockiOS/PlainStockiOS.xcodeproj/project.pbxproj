@@ -19,13 +19,10 @@
 		752505631B9EBA000006B69A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7525055F1B9EBA000006B69A /* LaunchScreen.xib */; };
 		752505641B9EBA000006B69A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 752505601B9EBA000006B69A /* Images.xcassets */; };
 		752505681B9EBA0E0006B69A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 752505661B9EBA0E0006B69A /* Info.plist */; };
-		7544ACAD1BCEC92E006F341D /* MPSQuestionsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7544ACAC1BCEC92E006F341D /* MPSQuestionsTableViewCell.m */; settings = {ASSET_TAGS = (); }; };
 		757901701BC4BCE900B81BF5 /* MPSMainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7579016F1BC4BCE900B81BF5 /* MPSMainTabBarController.m */; };
 		757901721BC5D82300B81BF5 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 757901711BC5D82300B81BF5 /* libsqlite3.dylib */; };
 		757901741BC5DCE500B81BF5 /* plainstockdb.sqlite3 in Resources */ = {isa = PBXBuildFile; fileRef = 757901731BC5DCE500B81BF5 /* plainstockdb.sqlite3 */; };
 		757901771BC6156200B81BF5 /* DataAnswer.m in Sources */ = {isa = PBXBuildFile; fileRef = 757901761BC6156200B81BF5 /* DataAnswer.m */; };
-		75A5D4A11BCB01D900D0EFFC /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75A5D49E1BCB01CC00D0EFFC /* Charts.framework */; };
-		75A5D4A21BCB01D900D0EFFC /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 75A5D49E1BCB01CC00D0EFFC /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		75B221551BA7A53E004CF695 /* MPSProgressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B221541BA7A53E004CF695 /* MPSProgressViewController.m */; };
 		75E126931BBB6D9600A9B9A7 /* MPSQuestionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E126921BBB6D9600A9B9A7 /* MPSQuestionsViewController.m */; };
 		75E126A01BBF047D00A9B9A7 /* MPSNavBarMenuOptionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E1269F1BBF047D00A9B9A7 /* MPSNavBarMenuOptionButton.m */; };
@@ -34,11 +31,9 @@
 		75E126AD1BC06DBA00A9B9A7 /* DataDateCash.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E126AC1BC06DBA00A9B9A7 /* DataDateCash.m */; };
 		75E126B01BC07B5200A9B9A7 /* BLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E126AF1BC07B5200A9B9A7 /* BLController.m */; };
 		95216E42A4A57F88C2F35CF0 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8789D146D6844E778796D864 /* libPods.a */; };
+		E59AFFD71BC72EC600A05028 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E59AFFD41BC72E3D00A05028 /* Charts.framework */; };
+		E59AFFD81BC72EC600A05028 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E59AFFD41BC72E3D00A05028 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E59AFFDC1BC7306700A05028 /* BalloonMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AFFDB1BC7306700A05028 /* BalloonMarker.swift */; settings = {ASSET_TAGS = (); }; };
-		E5A66C801BCA5290005507F6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E5A66C7F1BCA5290005507F6 /* libsqlite3.tbd */; };
-		E5A66C831BCA52A3005507F6 /* DBManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E5A66C821BCA52A3005507F6 /* DBManager.m */; settings = {ASSET_TAGS = (); }; };
-		E5A66C861BCA60C0005507F6 /* ManagerStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = E5A66C851BCA60C0005507F6 /* ManagerStrings.m */; settings = {ASSET_TAGS = (); }; };
-		E5A66C891BCB6675005507F6 /* WSResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E5A66C881BCB6675005507F6 /* WSResponse.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,23 +44,23 @@
 			remoteGlobalIDString = 66D44D711B9CD060005CFD78;
 			remoteInfo = PlainStockiOS;
 		};
-		75A5D49D1BCB01CC00D0EFFC /* PBXContainerItemProxy */ = {
+		E59AFFD31BC72E3D00A05028 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 75A5D4981BCB01CC00D0EFFC /* Charts.xcodeproj */;
+			containerPortal = E59AFFCE1BC72E3D00A05028 /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 5BA8EC401A9D14DC00CE82E1;
 			remoteInfo = Charts;
 		};
-		75A5D49F1BCB01CC00D0EFFC /* PBXContainerItemProxy */ = {
+		E59AFFD51BC72E3D00A05028 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 75A5D4981BCB01CC00D0EFFC /* Charts.xcodeproj */;
+			containerPortal = E59AFFCE1BC72E3D00A05028 /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = A52C5C371BAC5CA400594CDD;
 			remoteInfo = ChartsTV;
 		};
-		75A5D4A31BCB01D900D0EFFC /* PBXContainerItemProxy */ = {
+		E59AFFD91BC72EC600A05028 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 75A5D4981BCB01CC00D0EFFC /* Charts.xcodeproj */;
+			containerPortal = E59AFFCE1BC72E3D00A05028 /* Charts.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5BA8EC3F1A9D14DC00CE82E1;
 			remoteInfo = Charts;
@@ -79,7 +74,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				75A5D4A21BCB01D900D0EFFC /* Charts.framework in Embed Frameworks */,
+				E59AFFD81BC72EC600A05028 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -109,15 +104,12 @@
 		752505651B9EBA0E0006B69A /* PlainStockiOSTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlainStockiOSTests.m; path = PlainStockIOSTests/PlainStockiOSTests.m; sourceTree = "<group>"; };
 		752505661B9EBA0E0006B69A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PlainStockIOSTests/Info.plist; sourceTree = "<group>"; };
 		753AE04F1BB24F03009552D7 /* PlainStockiOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PlainStockiOS-Bridging-Header.h"; sourceTree = "<group>"; };
-		7544ACAB1BCEC92E006F341D /* MPSQuestionsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPSQuestionsTableViewCell.h; path = PlainStockIOS/Presentation/Components/MPSQuestionsTableViewCell.h; sourceTree = "<group>"; };
-		7544ACAC1BCEC92E006F341D /* MPSQuestionsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MPSQuestionsTableViewCell.m; path = PlainStockIOS/Presentation/Components/MPSQuestionsTableViewCell.m; sourceTree = "<group>"; };
 		7579016E1BC4BCE900B81BF5 /* MPSMainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPSMainTabBarController.h; path = PlainStockIOS/Presentation/ViewControllers/MPSMainTabBarController.h; sourceTree = "<group>"; };
 		7579016F1BC4BCE900B81BF5 /* MPSMainTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MPSMainTabBarController.m; path = PlainStockIOS/Presentation/ViewControllers/MPSMainTabBarController.m; sourceTree = "<group>"; };
 		757901711BC5D82300B81BF5 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		757901731BC5DCE500B81BF5 /* plainstockdb.sqlite3 */ = {isa = PBXFileReference; lastKnownFileType = file; name = plainstockdb.sqlite3; path = PlainStockIOS/Resources/database/plainstockdb.sqlite3; sourceTree = "<group>"; };
 		757901751BC6156200B81BF5 /* DataAnswer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataAnswer.h; path = PlainStockIOS/Logic/DataAnswer.h; sourceTree = "<group>"; };
 		757901761BC6156200B81BF5 /* DataAnswer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DataAnswer.m; path = PlainStockIOS/Logic/DataAnswer.m; sourceTree = "<group>"; };
-		75A5D4981BCB01CC00D0EFFC /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = PlainStockIOS/Frameworks/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
 		75B221531BA7A53E004CF695 /* MPSProgressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPSProgressViewController.h; path = PlainStockIOS/Presentation/ViewControllers/MPSProgressViewController.h; sourceTree = "<group>"; };
 		75B221541BA7A53E004CF695 /* MPSProgressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MPSProgressViewController.m; path = PlainStockIOS/Presentation/ViewControllers/MPSProgressViewController.m; sourceTree = "<group>"; };
 		75E126911BBB6D9600A9B9A7 /* MPSQuestionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MPSQuestionsViewController.h; path = PlainStockIOS/Presentation/ViewControllers/MPSQuestionsViewController.h; sourceTree = "<group>"; };
@@ -134,14 +126,8 @@
 		75E126AF1BC07B5200A9B9A7 /* BLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BLController.m; path = PlainStockIOS/Logic/BLController.m; sourceTree = "<group>"; };
 		8789D146D6844E778796D864 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		906C8788D3A45BC345727A65 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		E59AFFCE1BC72E3D00A05028 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "../../ios-charts/Charts/Charts.xcodeproj"; sourceTree = "<group>"; };
 		E59AFFDB1BC7306700A05028 /* BalloonMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalloonMarker.swift; sourceTree = "<group>"; };
-		E5A66C7F1BCA5290005507F6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		E5A66C811BCA52A3005507F6 /* DBManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBManager.h; sourceTree = "<group>"; };
-		E5A66C821BCA52A3005507F6 /* DBManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBManager.m; sourceTree = "<group>"; };
-		E5A66C841BCA60C0005507F6 /* ManagerStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ManagerStrings.h; sourceTree = "<group>"; };
-		E5A66C851BCA60C0005507F6 /* ManagerStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ManagerStrings.m; sourceTree = "<group>"; };
-		E5A66C871BCB6675005507F6 /* WSResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSResponse.h; sourceTree = "<group>"; };
-		E5A66C881BCB6675005507F6 /* WSResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSResponse.m; sourceTree = "<group>"; };
 		FEF89E0D09042A744AE50E38 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -150,8 +136,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E5A66C801BCA5290005507F6 /* libsqlite3.tbd in Frameworks */,
-				75A5D4A11BCB01D900D0EFFC /* Charts.framework in Frameworks */,
+				E59AFFD71BC72EC600A05028 /* Charts.framework in Frameworks */,
 				757901721BC5D82300B81BF5 /* libsqlite3.dylib in Frameworks */,
 				95216E42A4A57F88C2F35CF0 /* libPods.a in Frameworks */,
 			);
@@ -170,12 +155,6 @@
 		66D44D691B9CD060005CFD78 = {
 			isa = PBXGroup;
 			children = (
-				E5A66C871BCB6675005507F6 /* WSResponse.h */,
-				E5A66C881BCB6675005507F6 /* WSResponse.m */,
-				E5A66C841BCA60C0005507F6 /* ManagerStrings.h */,
-				E5A66C851BCA60C0005507F6 /* ManagerStrings.m */,
-				E5A66C811BCA52A3005507F6 /* DBManager.h */,
-				E5A66C821BCA52A3005507F6 /* DBManager.m */,
 				752505441B9EB4E20006B69A /* PlainStockIOS */,
 				752505321B9EB1630006B69A /* PlainStockIOSTests */,
 				66D44D731B9CD060005CFD78 /* Products */,
@@ -279,7 +258,7 @@
 		752505341B9EB17A0006B69A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				75A5D4981BCB01CC00D0EFFC /* Charts.xcodeproj */,
+				E59AFFCE1BC72E3D00A05028 /* Charts.xcodeproj */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -309,29 +288,26 @@
 				75E1269F1BBF047D00A9B9A7 /* MPSNavBarMenuOptionButton.m */,
 				75E126A21BBF7D3F00A9B9A7 /* MPSAnswerButton.h */,
 				75E126A31BBF7D3F00A9B9A7 /* MPSAnswerButton.m */,
-				7544ACAB1BCEC92E006F341D /* MPSQuestionsTableViewCell.h */,
-				7544ACAC1BCEC92E006F341D /* MPSQuestionsTableViewCell.m */,
 			);
 			name = Components;
-			sourceTree = "<group>";
-		};
-		75A5D4991BCB01CC00D0EFFC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				75A5D49E1BCB01CC00D0EFFC /* Charts.framework */,
-				75A5D4A01BCB01CC00D0EFFC /* ChartsTV.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		B12BA4551EB46A11F363ECBD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E5A66C7F1BCA5290005507F6 /* libsqlite3.tbd */,
 				757901711BC5D82300B81BF5 /* libsqlite3.dylib */,
 				8789D146D6844E778796D864 /* libPods.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E59AFFCF1BC72E3D00A05028 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E59AFFD41BC72E3D00A05028 /* Charts.framework */,
+				E59AFFD61BC72E3D00A05028 /* ChartsTV.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -351,7 +327,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				75A5D4A41BCB01D900D0EFFC /* PBXTargetDependency */,
+				E59AFFDA1BC72EC600A05028 /* PBXTargetDependency */,
 			);
 			name = PlainStockiOS;
 			productName = PlainStockiOS;
@@ -408,8 +384,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 75A5D4991BCB01CC00D0EFFC /* Products */;
-					ProjectRef = 75A5D4981BCB01CC00D0EFFC /* Charts.xcodeproj */;
+					ProductGroup = E59AFFCF1BC72E3D00A05028 /* Products */;
+					ProjectRef = E59AFFCE1BC72E3D00A05028 /* Charts.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -421,18 +397,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		75A5D49E1BCB01CC00D0EFFC /* Charts.framework */ = {
+		E59AFFD41BC72E3D00A05028 /* Charts.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Charts.framework;
-			remoteRef = 75A5D49D1BCB01CC00D0EFFC /* PBXContainerItemProxy */;
+			remoteRef = E59AFFD31BC72E3D00A05028 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		75A5D4A01BCB01CC00D0EFFC /* ChartsTV.framework */ = {
+		E59AFFD61BC72E3D00A05028 /* ChartsTV.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = ChartsTV.framework;
-			remoteRef = 75A5D49F1BCB01CC00D0EFFC /* PBXContainerItemProxy */;
+			remoteRef = E59AFFD51BC72E3D00A05028 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -501,16 +477,13 @@
 				663EAE0E1BA0C76C00505E8E /* MPSConfigurationViewController.m in Sources */,
 				75E126931BBB6D9600A9B9A7 /* MPSQuestionsViewController.m in Sources */,
 				75E126A71BC06C1800A9B9A7 /* DataQuestion.m in Sources */,
-				E5A66C831BCA52A3005507F6 /* DBManager.m in Sources */,
 				7525055B1B9EB9ED0006B69A /* MPSDetailTableViewController.m in Sources */,
 				757901771BC6156200B81BF5 /* DataAnswer.m in Sources */,
 				757901701BC4BCE900B81BF5 /* MPSMainTabBarController.m in Sources */,
 				75B221551BA7A53E004CF695 /* MPSProgressViewController.m in Sources */,
-				E5A66C891BCB6675005507F6 /* WSResponse.m in Sources */,
 				E59AFFDC1BC7306700A05028 /* BalloonMarker.swift in Sources */,
 				75E126B01BC07B5200A9B9A7 /* BLController.m in Sources */,
 				75E126A01BBF047D00A9B9A7 /* MPSNavBarMenuOptionButton.m in Sources */,
-				E5A66C861BCA60C0005507F6 /* ManagerStrings.m in Sources */,
 				752505391B9EB1AB0006B69A /* main.m in Sources */,
 				7525055C1B9EB9ED0006B69A /* MPSLoginViewController.m in Sources */,
 				75E126A41BBF7D3F00A9B9A7 /* MPSAnswerButton.m in Sources */,
@@ -518,7 +491,6 @@
 				66867B641BA234B1001590AD /* MPSSystemDateViewController.m in Sources */,
 				75E126AD1BC06DBA00A9B9A7 /* DataDateCash.m in Sources */,
 				66F4915E1BA354FD004611EA /* MPSDetailTableViewCell.m in Sources */,
-				7544ACAD1BCEC92E006F341D /* MPSQuestionsTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,10 +509,10 @@
 			target = 66D44D711B9CD060005CFD78 /* PlainStockiOS */;
 			targetProxy = 66D44D8C1B9CD060005CFD78 /* PBXContainerItemProxy */;
 		};
-		75A5D4A41BCB01D900D0EFFC /* PBXTargetDependency */ = {
+		E59AFFDA1BC72EC600A05028 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Charts;
-			targetProxy = 75A5D4A31BCB01D900D0EFFC /* PBXContainerItemProxy */;
+			targetProxy = E59AFFD91BC72EC600A05028 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

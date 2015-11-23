@@ -10,5 +10,8 @@
 
 @interface MPSConfigurationViewController : UITableViewController<UIPickerViewDelegate, UIPickerViewDataSource>
 
+@property (strong, nonatomic) NSArray *languageCollection;
+
+@property (weak, nonatomic) IBOutlet UILabel *lblSystemDate;
 
 @end

@@ -9,7 +9,6 @@
 #import "MPSLoginViewController.h"
 #import "AppDelegate.h"
 #import "BLController.h"
-#import "DBManager.h"
 
 @interface MPSLoginViewController ()
 
@@ -20,7 +19,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -33,34 +31,36 @@
 
 - (IBAction)startButtonPressed:(id)sender
 {
-    //Get unique identifier as userID
+    //Register userID on NSUserDefaults
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *userID = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    [[DBManager getSharedInstance] createDB];
-    [[DBManager getSharedInstance] saveDate:@"2015-10-05 07:06" Saldo:@"150.5"];
-    [[DBManager getSharedInstance] saveDate:@"2015-10-05 07:08" Saldo:@"18.3"];
-    [[DBManager getSharedInstance] saveDate:@"2015-10-05 07:01" Saldo:@"320.1"];
-    [[DBManager getSharedInstance] saveDate:@"2015-10-05 18:54" Saldo:@"10.4"];
-    WSResponse *registerResponse = [[BLController getInstance] registerUserWithID:userID];
-    //NSMutableArray *resultados = [[DBManager getSharedInstance] readInformationFrom:@"2015-10-05 07:08" To:@"2015-10-05 21:08"];
+    [defaults setObject:userID forKey:@"userId"];
+    [defaults synchronize];
     
-    if (registerResponse.error == NULL)
-    {
-        //Register userID on NSUserDefaults
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:userID forKey:@"userId"];
-        [defaults synchronize];
-        [BLController getInstance].userId = userID;
-        
-        //Show the Questions view
-        AppDelegate *appDelegateTemp = [[UIApplication sharedApplication]delegate];
-        UITabBarController *tabBarController = [[UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]] instantiateInitialViewController];
-        [tabBarController setSelectedIndex:0];
-        appDelegateTemp.window.rootViewController = tabBarController;
-    }
-    else
-    {
-        //TODO: control de errores
-    }
+    //Call login service on server
+    //TODO: primero se debe chequear conectividad, esto aplica a todos los ws no solo aca
+    //      en caso de no conectividad se le muestra una UIAlertView, tmb hay que poner
+    //      ActivityIndicator para todos los llamados a ws
+    //TODO: Hay que arreglar la respuesta del login, tira error unprocessable response porque es texto plano en ves de json
+    //      probablemente la solucion es agregar un descriptor
+    [[BLController getInstance] registerUserWithID: userID];
+    
+    
+    
+    //Show the Questions view
+    AppDelegate *appDelegateTemp = [[UIApplication sharedApplication]delegate];
+    
+    UITabBarController *tabBarController = [[UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]] instantiateInitialViewController];
+    appDelegateTemp.window.rootViewController = tabBarController;
+
+}
+
+
+#pragma mark - BLControllerDelegate
+
+- (void)userRegistrationFinished:(NSString *)msg
+{
+    NSLog(@"User registration finished with message: %@", msg);
 }
 
 

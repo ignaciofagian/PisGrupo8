@@ -2,48 +2,69 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.LazyCollectionOption;
+
+import org.hibernate.annotations.LazyCollection;
+
 @Entity
 @Table(name = "Accion")
+@Cacheable(value= true)
+@Access(AccessType.PROPERTY) // para implementar lazy-loading en ManyToOne AccessType debe ser = Property
 public class Accion implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Id
-	@Column(name = "IDAccion")
+
 	private Long id;
 
 	private String symbol;
 
 	private String nombre;
-
-	/*@ManyToMany(mappedBy = "acciones")
-	private Collection<Paquete> paquetes;*/
-
-	@OneToMany(mappedBy = "accion",cascade={CascadeType.ALL},orphanRemoval=true)
+	
+	
 	private Collection<Historico> historicos = new ArrayList<Historico>();
 
-
-
 	private double valorActual;
+	
+	// si es una accion "ficticia" en vez de real
+	@Column(name="equivalente")
+	private boolean equivalente = false;
 
+	//@LazyCollection(LazyCollectionOption.EXTRA)
+	@OneToMany(mappedBy = "accion",cascade={CascadeType.ALL},orphanRemoval=true,fetch=FetchType.LAZY)
 	public Collection<Historico> getHistoricos() {
 		return historicos;
 	}
 
 	public void setHistoricos(Collection<Historico> historicos) {
 		this.historicos = historicos;
+	}
+	
+	public void agregarHistorico(Date fecha,double valor){
+		Historico h = new Historico(this,valor,valor,fecha); 
+		this.getHistoricos().add(h);
+	}
+	
+	public void agregarHistorico(Date fecha,double valor,double valAdj){
+		Historico h = new Historico(this,valAdj,valor,fecha); 
+		this.getHistoricos().add(h);
 	}
 
 	public double getValorActual() {
@@ -68,6 +89,17 @@ public class Accion implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+	
+	@Column(name="pedirhistorico")
+	private boolean pedirHistorico = true;
+
+	public boolean isPedirHistorico() {
+		return pedirHistorico;
+	}
+
+	public void setPedirHistorico(boolean pedirHistorico) {
+		this.pedirHistorico = pedirHistorico;
 	}
 
 	@Override
@@ -95,6 +127,9 @@ public class Accion implements Serializable {
 		return true;
 	}
 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@Column(name = "IDAccion")
 	public Long getId() {
 		return id;
 	}
@@ -110,6 +145,14 @@ public class Accion implements Serializable {
 
 	public Accion() {
 		super();
+	}
+
+	public boolean isEquivalente() {
+		return equivalente;
+	}
+
+	public void setEquivalente(boolean equivalente) {
+		this.equivalente = equivalente;
 	}
 
 	

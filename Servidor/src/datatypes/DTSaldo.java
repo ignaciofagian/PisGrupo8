@@ -1,14 +1,16 @@
 package datatypes;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 
 
-public class DTSaldo {
+public class DTSaldo implements Serializable{
 	String tiempo = ""; // YYYY-MM-DD hh:mm
 	//long tiempoMilis;
 	int saldo;
+	int L = 0;
 
 	
 	
@@ -41,6 +43,18 @@ public class DTSaldo {
 		this.saldo = saldo;
 	}
 	
+	
+	
+	public int getL() {
+		return L;
+	}
+	public void setL(int l) {
+		L = l;
+	}
+	
+	public void setL(boolean l) {
+		L = l ? 1 : 0;
+	}
 	
 	
 	public DTSaldo() {

@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
@@ -15,7 +18,7 @@ import javax.persistence.TemporalType;
 
 import model.PK.HistoricoPK;
 
-@Entity
+@Entity() @Access(AccessType.PROPERTY)
 @Table(name = "Historico")//,uniqueConstraints={@UniqueConstraint(columnNames={"IDAccion","Fecha"})})
 @IdClass(value=HistoricoPK.class)
 public class Historico implements Serializable {
@@ -25,18 +28,16 @@ public class Historico implements Serializable {
 //	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	//private Long Id;
 	
-	@Id
-	@ManyToOne()
-	@JoinColumn(name = "IDAccion")
+
 	private Accion accion;
 	
-	
-	@Id
-	@JoinColumn(name = "Fecha") @Temporal(TemporalType.TIMESTAMP)
+
 	private Date fecha;
 	
 	
-	
+	@Id
+	@ManyToOne(fetch= FetchType.LAZY)
+	@JoinColumn(name = "IDAccion")
 	public Accion getAccion() {
 		return accion;
 	}
@@ -45,6 +46,9 @@ public class Historico implements Serializable {
 		this.accion = accion;
 	}
 
+	
+	@Id
+	@JoinColumn(name = "Fecha") @Temporal(TemporalType.TIMESTAMP)
 	public Date getFecha() {
 		return fecha;
 	}
@@ -123,6 +127,13 @@ public class Historico implements Serializable {
 		return (h1.getClose() / h1.getAdjClose()) / (h2.getClose() / h2.getAdjClose());
 		
 	}
+
+	@Override
+	public String toString() {
+		return "Hist(acc="+(accion == null ? "NULL!" : accion.getId())+ "@" + (fecha == null ? "NULL!" :  fecha.toString()) + " AC=" + adjClose + " CL=" + close;
+	}
+	
+	
 
 }
 

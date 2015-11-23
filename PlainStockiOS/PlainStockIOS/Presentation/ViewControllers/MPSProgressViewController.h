@@ -8,24 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import <Charts/Charts.h>
-#import "BLController.h"
 
-@interface MPSProgressViewController : UIViewController <BLControllerDelegate>
+@interface MPSProgressViewController : UIViewController
 
-@property (weak, nonatomic) IBOutlet LineChartView *chartView;
-@property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBarTitle;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navBarTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *botConstraint;
 @property (weak, nonatomic) IBOutlet UIButton *nextEventButton;
 @property (weak, nonatomic) IBOutlet UIButton *dateJumpButton;
-@property (weak, nonatomic) IBOutlet UILabel *goToNextEventLabel;
-@property (weak, nonatomic) IBOutlet UILabel *goToNextDateLabel;
-@property (weak, nonatomic) IBOutlet UILabel *balanceLabel;
 @property (weak, nonatomic) IBOutlet UILabel *moneyLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *emoticonImageView;
-@property (weak, nonatomic) IBOutlet UITextField *auxDateTextField;
-
 
 
 - (IBAction)showNextEventAlert:(id)sender;

@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,11 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+
 
 @Entity
 @Table(name = "ClienteAccion")
@@ -38,9 +36,7 @@ public class ClienteAccion implements Serializable {
 						@JoinColumn(name="IDPaq", referencedColumnName="IDPaq")})
 	
 	*/
-	/*@ManyToOne() @JoinColumns(value={@JoinColumn(name="Acc_IDPortafolio", referencedColumnName="IDPortafolio"),
-			@JoinColumn(name="Acc_IDPaq", referencedColumnName="IDPaq")})
-	private ClientePaquete padre;*/
+
 	
 
 	//inverseJoinColumns={@JoinColumn(name="IDAccion", referencedColumnName="IDAccion")})

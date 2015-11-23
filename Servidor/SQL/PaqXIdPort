@@ -1,0 +1,1 @@
+﻿Select pq.idpaq,pq.nombre FROM Paquete pq JOIN ClientePaquete cp ON pq.idpaq = cp.idpaq WHERE cp.idportafolio = 23;

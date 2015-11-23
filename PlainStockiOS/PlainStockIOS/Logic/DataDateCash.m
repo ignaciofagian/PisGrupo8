@@ -10,7 +10,7 @@
 
 @implementation DataDateCash
 
-- (id)initWithDate:(NSString *)date cash:(NSString *)cash
+- (id)initWithDate:(NSDate *)date cash:(double*)cash
 {
     self = [super init];
     if (self) {

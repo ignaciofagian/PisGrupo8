@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -27,10 +28,11 @@ public class SaldoHistorico  implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) 
+	@SequenceGenerator(name="seq_saldo_historico",sequenceName="seq_saldo_historico",allocationSize=50)
+	@Id @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="seq_saldo_historico") 
 	private Long Id;
 	
-	@ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="portafolio_idportafolio")
+	@ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="portafolio_idportafolio",updatable=false)
 	private Portafolio portafolio;
 	 @Column(name="saldohistorico_key") @Temporal(TemporalType.TIMESTAMP)
 	private Calendar fecha;

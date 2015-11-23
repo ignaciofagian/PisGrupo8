@@ -17,7 +17,7 @@ import UIKit
 
 public class RadarChartDataSet: LineRadarChartDataSet
 {
-    public required init()
+    public override init()
     {
         super.init()
         

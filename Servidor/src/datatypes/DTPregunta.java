@@ -1,10 +1,11 @@
 package datatypes;
 
+import java.io.Serializable;
 import java.util.List;
 
 import model.PreguntaGeneral;
 
-public class DTPregunta {
+public class DTPregunta implements Serializable {
 	
 	private long id;
 	private String ing;

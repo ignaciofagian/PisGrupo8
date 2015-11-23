@@ -10,7 +10,7 @@
 
 @interface DataAnswer : NSObject
 
-@property (nonatomic) NSInteger answerId;
+@property (strong, nonatomic) NSString *idAnswer;
 @property (strong, nonatomic) NSString *textEng;
 @property (strong, nonatomic) NSString *textSpa;
 

@@ -19,7 +19,7 @@
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:name="com.fing.proingsoft.plainstock.Pregunta1"
-            android:id="@+id/fragment"
+            android:id="@+id/fragment_preguntas"
             android:layout_above="@+id/llPreguntas"
             android:layout_centerHorizontal="true"
             android:layout_weight="8"

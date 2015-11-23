@@ -1,5 +1,6 @@
 package com.fing.proingsoft.plainstock;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,8 +15,10 @@ import com.fing.proingsoft.plainstock.otros.PlainStockDataSource;
 import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Detalles extends ActividadConMenuInf {
+    private Configuracion conf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,24 +36,34 @@ public class Detalles extends ActividadConMenuInf {
         lista_historia = (ListView)findViewById(R.id.lista_historia);
 
         PlainStockDataSource dataSource = new PlainStockDataSource(this);
-        Configuracion conf = Configuracion.getInstance();
+        conf = Configuracion.getInstance();
         ArrayList<Pair> queryResult = dataSource.querySaldo(conf.getRango(), conf.getFechaSistema());
+        Collections.reverse(queryResult);
 
         int cant = queryResult.size();
         aumento = 0;
-        saldo2 = (Integer)queryResult.get(0).second;
         ArrayList<String> lista = new ArrayList<>();
         for (int i = 0; i < cant; i++) {
-            saldo = (Integer)queryResult.get(cant-i-1).second;
-            aumento = (saldo*100/saldo2) -100;
+            saldo = (Integer)queryResult.get(i).second;
+            if(i== cant-1){
+                aumento=0;
+            }
+            else {
+                saldo2 = (Integer)queryResult.get(i+1).second;
+                aumento = ((((float)saldo)*100)/saldo2) -100;
+            }
             tiempo = (String)queryResult.get(i).first;
-            entrada = tiempo + "  " + String.format("%.2f", aumento) + "%   $"  + ((Integer) saldo).toString();
-            saldo2 = saldo;
+            String[] aux;
+            aux = tiempo.split(" ");
+
+
+            entrada = tiempo + "           " + String.format("%.2f", aumento) + "%            $"  + ((Integer) saldo).toString() + "             ";
             lista.add(i,entrada);
         }
+        ArrayAdapter<String> ad = new ArrayAdapter<String>(this, R.layout.texto_centrado, R.id.text1, lista);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,lista);
-        lista_historia.setAdapter(adapter);
+
+        lista_historia.setAdapter(ad);
     }
 
     @Override
@@ -65,13 +78,14 @@ public class Detalles extends ActividadConMenuInf {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch(item.getItemId()){
+            case R.id.action_settings:
+                Intent intent = new Intent(this, PantallaConfiguracion.class);
+                this.startActivity(intent);
+                break;
+            // This doesn't work?
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

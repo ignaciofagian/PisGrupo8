@@ -1,5 +1,6 @@
 package model;
 
+import javax.persistence.Cacheable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -7,6 +8,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "PaqueteIndice")
 @DiscriminatorValue("Indice")
+@Cacheable(value=true)
 public class PaqueteIndice extends Paquete {
 
 	private static final long serialVersionUID = 1L;

@@ -27,24 +27,19 @@ public class LineScatterCandleRadarChartRenderer: ChartDataRendererBase
     /// :param: points
     /// :param: horizontal
     /// :param: vertical
-    public func drawHighlightLines(context context: CGContext?, point: CGPoint, set: LineScatterCandleChartDataSet)
+    public func drawHighlightLines(#context: CGContext, points: UnsafePointer<CGPoint>, horizontal: Bool, vertical: Bool)
     {
         // draw vertical highlight lines
-        if set.isVerticalHighlightIndicatorEnabled
+        if vertical
         {
-            CGContextBeginPath(context)
-            CGContextMoveToPoint(context, point.x, viewPortHandler.contentTop)
-            CGContextAddLineToPoint(context, point.x, viewPortHandler.contentBottom)
-            CGContextStrokePath(context)
+            CGContextStrokeLineSegments(context, points, 2)
         }
         
         // draw horizontal highlight lines
-        if set.isHorizontalHighlightIndicatorEnabled
+        if horizontal
         {
-            CGContextBeginPath(context)
-            CGContextMoveToPoint(context, viewPortHandler.contentLeft, point.y)
-            CGContextAddLineToPoint(context, viewPortHandler.contentRight, point.y)
-            CGContextStrokePath(context)
+            var pts = UnsafePointer<CGPoint>()
+            CGContextStrokeLineSegments(context, points.advancedBy(2), 2)
         }
     }
 }

@@ -1,23 +1,28 @@
 package com.fing.proingsoft.plainstock;
 
+import android.app.Fragment;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fing.proingsoft.plainstock.otros.Configuracion;
+import com.fing.proingsoft.plainstock.otros.DatosPantalla;
+import com.fing.proingsoft.plainstock.otros.DatosPantalla.TIPO_PREGUNTAS;
 import com.fing.proingsoft.plainstock.otros.PlainStockWS;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -29,30 +34,21 @@ import java.util.Arrays;
  * create an instance of this fragment.
  */
 public class Pregunta1 extends Fragment {
+    public static final String TAG_ERROR = "plainstock.P.OCV";
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-
-    // TODO: Rename and change types of parameters
-    private String _pregunta;
-    private String[] _respuestas;
     private TextView conf;
-    private String idioma = "ing"; //El idioma que aparece en el JSONArray
-
-    private int _nroPantalla =0;
-    private int _maxPregunta;
-    private String[] _todasPregunta;
-    private String[][] _todasRespuestas;
+    //private String idioma = "ing"; //El idioma que aparece en el JSONArray
 
 
-    private int[] _nroRespuesta;
-    private int[] _contestadas;
-    private String[][] _idRespuestas;
-    private int _maxContestada = 0;
     private ListView _lista;
     private  ListAdapterPreguntas _adapter;
-    private static enum TIPO_PREGUNTAS{GENERALES,ESPECIFICAS};
-    private TIPO_PREGUNTAS tipo_preguntas;
+    private DatosPantalla d = new DatosPantalla();
+
+
+
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -68,27 +64,29 @@ public class Pregunta1 extends Fragment {
     public static Pregunta1 newInstance(String param1, String[] param2) {
         Pregunta1 fragment = new Pregunta1();
 
-        //fragment.setearParametros(param1, param2);
+        //fragment.setearPreguntasPantallaActual(param1, param2);
         return fragment;
     }
 
     private static void setArgs(Pregunta1 p, String param1, String[] param2){
         Bundle args = new Bundle();
-        args.putString("_pregunta", param1);
-        args.putStringArray("_respuestas", param2);
+        args.putString("_preguntaPantActual", param1);
+        args.putStringArray("_respuestasPantActual", param2);
         p.setArguments(args);
     }
 
+    /**
+     * Constructor por defecto para que se pueda previsualizar en el diseñador
+     */
     public Pregunta1() {
-        _pregunta = "¿Qué piensa que pasa?";
-        _respuestas =  new String[]{"Sube","Queda Igual","Baja"};
-        //Arrays.fill(_contestadas, -1);
+
     }
 
-    private void setearParametros(View view,String pregunta,String[] respuestas){
+    // metodo auxiliar
+    private void setearPreguntasPantallaActual(View view, String pregunta, String[] respuestas){
         TextView txview = ((TextView) view.findViewById(R.id.tvPreguntas));
         txview.setText(pregunta);
-        //setArgs(this,_pregunta,_respuestas);
+
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,100 +97,165 @@ public class Pregunta1 extends Fragment {
         _lista.setAdapter(_adapter);
     }
 
+    private boolean habilitoBack(){
+        return d.hayPantallaAnt();
+    }
+
+    private boolean habilitoNext(){
+        return d.hayProximoPaso();
+    }
+
+
+    private void  setEnableFlecha(ImageButton v,boolean enable){
+        v.setEnabled(enable);
+        v.setColorFilter(enable ? Color.TRANSPARENT : Color.GRAY);
+    }
+    /**
+     * Se encarga de la logica de cambiar las preguntas, activar y desactivar botones
+     * @param root
+     * @param numero
+     */
     private void cambiarPreguntas(View root,int numero){
 
-        if(_todasPregunta.length != 0) {
-            _pregunta = _todasPregunta[_nroPantalla];
-            _respuestas = _todasRespuestas[_nroPantalla];
-            setearParametros(root, _pregunta, _respuestas);
+        if(d.cantidadPreguntas != 0) {
+
+            setearPreguntasPantallaActual(root, d.pregActual(), d.respuestasActuales());
+
             ImageButton back = (ImageButton) root.findViewById(R.id.btPrevQ);
             ImageButton next = (ImageButton) root.findViewById(R.id.btNextQ);
 
-            back.setEnabled(_nroPantalla > 0);
-            next.setEnabled(_nroPantalla <= _maxContestada);
-            if ((_nroPantalla == _maxPregunta)) {
-                next.setEnabled(_nroPantalla > _maxContestada);
-                next.setImageDrawable(getResources().getDrawable(R.drawable.img_check_blue));
-                conf.setText("Confirmar");
-                next.setEnabled(true);
+            // el boton reiniciar debe ser visible si hay alguna pregunta contestada
+            final Button _btnreiniciar = (Button)root.findViewById(R.id.btnReiniciar);
+            if (d._maxContestada == 0 && d.tipo_preguntas == TIPO_PREGUNTAS.GENERALES){
+                _btnreiniciar.setVisibility(View.INVISIBLE);
             }
-            _adapter.setRespuesta(_contestadas[numero]);
+            else{
+                _btnreiniciar.setVisibility(View.VISIBLE);
+            }
+
+            setEnableFlecha(back, habilitoBack());
+            setEnableFlecha(next, habilitoNext());
+
+
+            if ((d.puedoConfirmar())) {
+                next.setImageDrawable(getResources().getDrawable(R.drawable.img_check_blue));
+                String str_confirmar = getResources().getString(R.string.str_preg_confirmar);
+                conf.setText(str_confirmar);
+            }
+            else{
+                next.setImageDrawable(getResources().getDrawable(R.drawable.img_right_blue));
+            }
+
+
+            _adapter.setRespuesta(d._contestadas[numero]);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // se lee de vuelta en el onCreate y se usa en el onCreateView
+        outState.putSerializable("d", this.d);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
-        //((ActionBarActivity)getActivity()).getSupportActionBar().setCustomView(R.layout.titulopregunta);
-
-
-        if (getArguments() != null) {
-            _pregunta = getArguments().getString("_pregunta");
-            _respuestas = getArguments().getStringArray("_respuestas");
-
-            setArgs(this, _pregunta, _respuestas);
-            //setearParametros(_pregunta,_respuestas);
+        if (savedInstanceState != null) {
+            DatosPantalla dp = (DatosPantalla)savedInstanceState.getSerializable("d");
+            this.d = dp;
         }
-
-
+        else{
+            this.d = new DatosPantalla();
+        }
     }
 
+
+
     public void back_listener(View boton){
-        if (_nroPantalla >= 0) {
-            _nroPantalla--;
-            cambiarPreguntas(this.getView(), _nroPantalla);
+        if (d.back()) {
+            cambiarPreguntas(this.getView(), d._nroPantalla);
             conf.setText("");
         }
     }
 
     public void  next_listener(View boton){
-        if(_nroPantalla==_maxPregunta){
+        if(d.puedoConfirmar()){
             confirmarRespuestas();
         }
-        else if (_nroPantalla >= 0) {
-            _nroPantalla++;
-            cambiarPreguntas(this.getView(), _nroPantalla);
-        }else{
-//
+        else if (d.hayPreguntaProx()) {
+            d.next();
+            cambiarPreguntas(this.getView(), d._nroPantalla);
         }
     }
 
     public void _btnreiniciar_Listener(View boton){
         PlainStockWS webService = new PlainStockWS();
         webService.resetearTodasLasPreguntas(getActivity());
+
         refreshFragment();
     }
 
     public void refreshFragment(){
+        this.d.reiniciar = true;
         getActivity().recreate();
     }
 
+    /**
+     * Listener que se usa cuando se hace click en una pregunta
+     * @param b Objeto button que se presiono
+     */
     private void contestar(Button b){
         // para decidir despues que hacer cuando no este hardcoreado
+
         int posicion = (int)b.getTag(R.string.TAG_NroRespuesta);
         String preguntaId = (String)b.getTag(R.string.TAG_ID_Respuesta);
-        _contestadas[_nroPantalla] = posicion;
-        _adapter.setRespuesta(posicion);
-        _adapter.notifyDataSetChanged();
-        if (_nroPantalla <= _maxPregunta){
 
-            _maxContestada = Math.max(_nroPantalla, _maxContestada);
-            _maxContestada++;
-            cambiarPreguntas(this.getView(), _nroPantalla);
+        _adapter.setRespuesta(posicion);
+
+        _adapter.notifyDataSetChanged();
+        d.contestar(posicion);
+
+
+        if (!d.puedoConfirmar()){
+
+            //_maxContestada++;
+            // cambio preguntas despues de un momento
+            AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
+            long milisDemoraEfecto = 700; // tiempo  antes de fade out
+            long milisEfecto  =200;
+            anim.setStartOffset(milisDemoraEfecto);
+            anim.setDuration(milisEfecto);
+            anim.setFillAfter(true);
+            _lista.startAnimation(anim);
+            Handler demora = new Handler();
+            demora.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    d.next();
+                    cambiarPreguntas(getView(), d._nroPantalla);
+                    AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+                    anim.setDuration(300);
+                    anim.setFillAfter(true);
+                    _lista.startAnimation(anim);
+                }
+            },milisDemoraEfecto+milisEfecto);
+
         }
-        else{
+        else {
+            cambiarPreguntas(this.getView(),d._nroPantalla);
         }
+
     }
 
     public void confirmarRespuestas(){
         PlainStockWS webService = new PlainStockWS();
         ArrayList<String> idResp = new ArrayList<>();
-        for (int i = 0; i<= _maxPregunta; i++){
-            idResp.add(i,_idRespuestas[i][_contestadas[i]]);;
+        for (int i = 0; i<= d._maxPregunta; i++){
+            idResp.add(i,d._idRespuestas[i][d._contestadas[i]]);;
         }
-        if(tipo_preguntas == TIPO_PREGUNTAS.GENERALES){
+        if(d.tipo_preguntas == TIPO_PREGUNTAS.GENERALES){
             webService.registrarRespuestasGenerales(getActivity(), idResp);
         }
         else{
@@ -208,89 +271,75 @@ public class Pregunta1 extends Fragment {
         // Inflate the layout for this fragment
         final View rootView =  inflater.inflate(R.layout.fragment_pregunta1, container, false);
 
-        //Obtengo las preguntas del servidor
-        try {
-            PlainStockWS webService = new PlainStockWS();
-            JSONArray respWS = webService.obtenerPreguntasEspecificas(getActivity());
-            tipo_preguntas= TIPO_PREGUNTAS.ESPECIFICAS;
-            //Si aun no respondi preguntas generales
-            JSONArray pregResp = webService.obtenerPreguntasRespondidas(getActivity());
-            if((respWS == null || respWS.length() == 0) && pregResp.length()==0){
-                respWS = webService.obtenerPreguntasGenerales(getActivity());
-                tipo_preguntas = TIPO_PREGUNTAS.GENERALES;
-            }
-//            //SUSTITUIR CON WS
-//            JSONArray pregResp = webService.obtenerPreguntasRespondidas(getActivity());
-//            if(pregResp.length()==(respWS.length()+2)){
-//                respWS = new JSONArray();
-//            }
-//            //////////////////
-            int count = respWS.length();
-            _todasPregunta = new String[count];
-            _todasRespuestas = new String[count][];
-            _idRespuestas = new String[count][];
-            _maxPregunta=count-1;
-            _nroRespuesta = new int[_maxPregunta + 1];
-            _contestadas = new int[_maxPregunta + 1];
-            Arrays.fill(_contestadas, -1);
-            JSONObject item,item2;
-            JSONArray resps;
-            int count2;
-            for(int i=0;i<count;i++){
-                item = respWS.getJSONObject(i);
-                _todasPregunta[i] =item.getString(idioma);
-                resps = item.getJSONArray("resp");
-                count2 = resps.length();
-                _todasRespuestas[i] = new String[count2];
-                _idRespuestas[i] = new String[count2];
-                for(int j=0;j<count2 ;j++){
-                    item2 = resps.getJSONObject(j);
-                    _todasRespuestas[i][j] = item2.getString(idioma);
-                    _idRespuestas[i][j] = item2.getString("id");
+
+        if (d.reiniciar) {
+
+            //Obtengo las preguntas del servidor
+            try {
+                d = new DatosPantalla();
+                PlainStockWS webService = new PlainStockWS();
+                JSONArray respWS = webService.obtenerPreguntasEspecificas(getActivity());
+                d.tipo_preguntas = TIPO_PREGUNTAS.ESPECIFICAS;
+                //Si aun no respondi preguntas generales
+                JSONArray pregResp = webService.obtenerPreguntasRespondidas(getActivity());
+                if ((respWS == null || respWS.length() == 0) && pregResp.length() == 0) {
+                    respWS = webService.obtenerPreguntasGenerales(getActivity());
+                    d.tipo_preguntas = TIPO_PREGUNTAS.GENERALES;
+
                 }
+
+            d.cargarDesdeJSON(respWS);
+            } catch (Exception e) {
+                Log.e(TAG_ERROR,e.getMessage(),e);
             }
         }
-        catch (Exception e){}
+        d.setIdioma(Configuracion.getInstance().getLangCode());
 
 
-        _lista = (ListView) rootView.findViewById(R.id.lvRespuestas);
-        cambiarPreguntas(rootView, _nroPantalla);
-        conf = (TextView) rootView.findViewById(R.id._confirmar);
+        try {
+            _lista = (ListView) rootView.findViewById(R.id.lvRespuestas);
 
-        ImageButton back = (ImageButton)rootView.findViewById(R.id.btPrevQ);
-        ImageButton next = (ImageButton)rootView.findViewById(R.id.btNextQ);
-        final Button _btnreiniciar = (Button)rootView.findViewById(R.id.btnReiniciar);
+            conf = (TextView) rootView.findViewById(R.id._confirmar);
+            cambiarPreguntas(rootView, d._nroPantalla);
 
+            ImageButton back = (ImageButton)rootView.findViewById(R.id.btPrevQ);
+            setEnableFlecha(back,habilitoBack());
+            ImageButton next = (ImageButton)rootView.findViewById(R.id.btNextQ);
+            setEnableFlecha(next,habilitoNext());
+            final Button _btnreiniciar = (Button)rootView.findViewById(R.id.btnReiniciar);
 
-        _btnreiniciar.setVisibility(rootView.INVISIBLE);
+        /*
+        Configuro los listeners
+         */
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    back_listener(view);
+                }
+            });
+            next.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    next_listener(view);
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                back_listener(view);
-                _btnreiniciar.setVisibility(rootView.VISIBLE);
-            }
-        });
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                next_listener(view);
-                _btnreiniciar.setVisibility(rootView.VISIBLE);
-
-            }
-        });
-        _btnreiniciar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                _btnreiniciar_Listener(view);
-                _btnreiniciar.setVisibility(rootView.VISIBLE);
-            }
-        });
+                }
+            });
+            _btnreiniciar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    _btnreiniciar_Listener(view);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG_ERROR,e.getMessage(),e);
+        }
 
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+
+
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -314,7 +363,7 @@ public class Pregunta1 extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         public void onFragmentInteraction(Uri uri);
     }
 

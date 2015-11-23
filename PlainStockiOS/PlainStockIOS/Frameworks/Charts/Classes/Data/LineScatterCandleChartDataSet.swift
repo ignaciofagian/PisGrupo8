@@ -14,7 +14,7 @@
 import Foundation
 import UIKit
 
-public class LineScatterCandleChartDataSet: BarLineScatterCandleBubbleChartDataSet
+public class LineScatterCandleChartDataSet: BarLineScatterCandleChartDataSet
 {
     /// Enables / disables the horizontal highlight-indicator. If disabled, the indicator is not drawn.
     public var drawHorizontalHighlightIndicatorEnabled = true
@@ -37,7 +37,7 @@ public class LineScatterCandleChartDataSet: BarLineScatterCandleBubbleChartDataS
     
     public override func copyWithZone(zone: NSZone) -> AnyObject
     {
-        let copy = super.copyWithZone(zone) as! LineScatterCandleChartDataSet
+        var copy = super.copyWithZone(zone) as! LineScatterCandleChartDataSet
         copy.drawHorizontalHighlightIndicatorEnabled = drawHorizontalHighlightIndicatorEnabled
         copy.drawVerticalHighlightIndicatorEnabled = drawVerticalHighlightIndicatorEnabled
         return copy

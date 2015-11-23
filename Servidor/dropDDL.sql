@@ -4,6 +4,9 @@ ALTER TABLE ClientePaquete DROP CONSTRAINT FK_ClientePaquete_IDPaq
 ALTER TABLE PreguntaEspecifica DROP CONSTRAINT FK_PreguntaEspecifica_PAQUETE_IDPaq
 ALTER TABLE PreguntaEspecifica DROP CONSTRAINT FK_PreguntaEspecifica_IDPreg
 ALTER TABLE PreguntaGeneral DROP CONSTRAINT FK_PreguntaGeneral_IDPreg
+ALTER TABLE PaqueteAlgoritmico DROP CONSTRAINT FK_PaqueteAlgoritmico_acc_debug
+ALTER TABLE PaqueteAlgoritmico DROP CONSTRAINT FK_PaqueteAlgoritmico_acc_historia
+ALTER TABLE PaqueteAlgoritmico DROP CONSTRAINT FK_PaqueteAlgoritmico_acc_equivalente
 ALTER TABLE PaqueteAlgoritmico DROP CONSTRAINT FK_PaqueteAlgoritmico_IDPaq
 ALTER TABLE PaqueteEST DROP CONSTRAINT FK_PaqueteEST_IDPaq
 ALTER TABLE PaqueteIndice DROP CONSTRAINT FK_PaqueteIndice_IDPaq
@@ -52,3 +55,4 @@ DROP TABLE Paquete_PAQUETEACCION CASCADE
 DROP TABLE Paquete_PaqueteCategoria CASCADE
 DROP TABLE RespuestaGeneral_PaqueteCategoria CASCADE
 DROP TABLE CATEGORY_CATEGORY CASCADE
+DROP SEQUENCE seq_saldo_historico

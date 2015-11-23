@@ -1,6 +1,8 @@
 package datatypes;
 
-public class DTRespuesta {
+import java.io.Serializable;
+
+public class DTRespuesta implements Serializable {
 
 	private long id;
 	private String ing;

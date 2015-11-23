@@ -1,0 +1,33 @@
+'indname'|'indowner'|'indrelid'|'indam'|'indkey'|'indkey_names'|'indexprs'|'indpred'
+'accion_pkey'|16386|'accion'|'btree'|'1'|'{idaccion}'|f|f
+'administrador_pkey'|16386|'administrador'|'btree'|'1'|'{idusuario}'|f|f
+'category_pkey'|16386|'category'|'btree'|'1'|'{id}'|f|f
+'category_category_pkey'|16386|'category_category'|'btree'|'1 2'|'{category_id,children_id}'|f|f
+'cliente_idtelefono_key'|16386|'cliente'|'btree'|'2'|'{idtelefono}'|f|f
+'cliente_pkey'|16386|'cliente'|'btree'|'1'|'{idusuario}'|f|f
+'cliente_respuesta_pkey'|16386|'cliente_respuesta'|'btree'|'1 2'|'{idusuario,idresp}'|f|f
+'idx_clienteaccion_clipaquete'|16386|'clienteaccion'|'btree'|'5 4'|'{acc_idportafolio,acc_idpaq}'|f|f
+'clienteaccion_pkey'|16386|'clienteaccion'|'btree'|'1'|'{idcliaccion}'|f|f
+'clientepaquete_pkey'|16386|'clientepaquete'|'btree'|'3 4'|'{idpaq,idportafolio}'|f|f
+'historico_pkey'|16386|'historico'|'btree'|'1 4'|'{fecha,idaccion}'|f|f
+'idx_historico_fecha'|16386|'historico'|'btree'|'1'|'{fecha}'|f|f
+'idx_historico_idaccion'|16386|'historico'|'hash'|'4'|'{idaccion}'|f|f
+'paquete_pkey'|16386|'paquete'|'btree'|'1'|'{idpaq}'|f|f
+'paquete_paqueteaccion_pkey'|16386|'paquete_paqueteaccion'|'btree'|'1 2 3'|'{idpaq,idpaqac,idaccion}'|f|f
+'paquete_paquetecategoria_pkey'|16386|'paquete_paquetecategoria'|'btree'|'1 2'|'{paquete_idpaq,categorias_idpaqcategoria}'|f|f
+'paqueteaccion_pkey'|16386|'paqueteaccion'|'btree'|'2 3'|'{idaccion,idpaq}'|f|f
+'paquetealgoritmico_pkey'|16386|'paquetealgoritmico'|'btree'|'1'|'{idpaq}'|f|f
+'paquetecategoria_pkey'|16386|'paquetecategoria'|'btree'|'1'|'{idpaqcategoria}'|f|f
+'paqueteest_pkey'|16386|'paqueteest'|'btree'|'1'|'{idpaq}'|f|f
+'paqueteindice_pkey'|16386|'paqueteindice'|'btree'|'1'|'{idpaq}'|f|f
+'portafolio_pkey'|16386|'portafolio'|'btree'|'1'|'{idportafolio}'|f|f
+'saldo_fecha_idx'|16386|'portafolio_saldohistorico'|'btree'|'2'|'{saldohistorico_key}'|f|f
+'portafolio_saldohistorico_pkey'|16386|'portafolio_saldohistorico'|'btree'|'1'|'{id}'|f|f
+'idx_saldo_portafolio'|16386|'portafolio_saldohistorico'|'hash'|'4'|'{portafolio_idportafolio}'|f|f
+'pregunta_pkey'|16386|'pregunta'|'btree'|'1'|'{idpreg}'|f|f
+'preguntaespecifica_pkey'|16386|'preguntaespecifica'|'btree'|'1'|'{idpreg}'|f|f
+'preguntageneral_pkey'|16386|'preguntageneral'|'btree'|'1'|'{idpreg}'|f|f
+'respuesta_pkey'|16386|'respuesta'|'btree'|'1'|'{idresp}'|f|f
+'respuestaespecifica_pkey'|16386|'respuestaespecifica'|'btree'|'1'|'{idresp}'|f|f
+'respuestageneral_pkey'|16386|'respuestageneral'|'btree'|'1'|'{idresp}'|f|f
+'respuestageneral_paquetecategoria_pkey'|16386|'respuestageneral_paquetecategoria'|'btree'|'1 2'|'{idresp,idpaqcategoria}'|f|f

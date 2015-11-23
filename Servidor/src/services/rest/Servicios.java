@@ -30,11 +30,14 @@ import model.Pregunta;
 import model.PreguntaEspecifica;
 import model.PreguntaGeneral;
 import model.RespuestaGeneral;
+import ejb.EjbCalculoSaldo;
 import ejb.EjbCliente;
 import ejb.EjbPaquete;
 import ejb.EjbServidor;
+import ejb.IEjbCalculoSaldoHist;
 import ejb.IEjbCliente;
 import ejb.IEjbPaquete;
+import ejb.IEjbPrueba;
 import ejb.IEjbServidor;
 
 @Path("/app")
@@ -48,6 +51,12 @@ public class Servicios {
 	private IEjbCliente ejbCliente;
 	@EJB
 	private IEjbPaquete ejbPaquete;
+	
+	@EJB
+	private IEjbCalculoSaldoHist ejbCalcSaldo;
+	
+	@EJB
+	private IEjbPrueba ejbPrueba;
 
 	@GET
 	@Path("registrar")
@@ -116,9 +125,9 @@ public class Servicios {
 	@Path("preguntas/obtenerPreguntasEspecificas")
 	@Produces(MediaType.APPLICATION_JSON)
 	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-	public ArrayList<DTPregunta> obtenerPreguntasEspecificas(@QueryParam("id") String idCliente, @QueryParam("resp") String respuestas) {		
+	public ArrayList<DTPregunta> obtenerPreguntasEspecificas(@QueryParam("id") String idCliente) {		
 		System.out.println("entro a obtener preguntas especificas");
-		return ejbCliente.obtenerPreguntasEspecificas(idCliente, respuestas);
+		return ejbCliente.obtenerPreguntasEspecificas(idCliente);
 	}
 	
 	@GET
@@ -159,7 +168,7 @@ public class Servicios {
 		String idCliente = "prueba5555";
 		ejbCliente.registrarUsuario(idCliente);
 		ArrayList<Long> respuestasEspecificas = new ArrayList<Long>();
-		for (DTPregunta esp : ejbCliente.obtenerPreguntasEspecificas(idCliente, "2-3-4")) {
+		for (DTPregunta esp : ejbCliente.obtenerPreguntasEspecificas(idCliente)) {
 			for (DTRespuesta r : esp.getResp()) {
 				if (esp.getIng() == "How much do you belive that industry will improve?" && r.getIng() == "Little") {
 					respuestasEspecificas.add( r.getId());
@@ -225,7 +234,50 @@ public class Servicios {
 	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	public DTEstado borrarCliente(@QueryParam("id") String idCliente) {
 		return ejbCliente.borrarCliente(idCliente);
+	}
+	
+	@GET
+	@Path("probarH")
+	@Produces(MediaType.APPLICATION_JSON)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public DTEstado probarDatosHistoricos(@QueryParam("id") String idCliente) {
+		ejbCalcSaldo.pruebaDatosHistoricos(idCliente);
+		DTEstado estado = new DTEstado();
+		estado.setEstado("ok");
+		return estado;
+	}
+	
+	
+	
+	@GET
+	@Path("crearClientes")
+	@Produces(MediaType.APPLICATION_JSON)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public DTEstado probarDatosHistoricos(@QueryParam("cantidad") int cantidad) {
+		ejbPrueba.borrarClientesPrueba();
+		ejbPrueba.crearClientesPrueba(cantidad);
+		DTEstado estado = new DTEstado();
+		estado.setEstado("ok");
+		return estado;
+	}
+	
 
+	
+	@GET // borrar una vez que se cambie
+	@Path("maquinatiempo")
+	@Produces(MediaType.APPLICATION_JSON)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public DTEstado maquinaTiempo(@QueryParam("iden") String iden,@QueryParam("date") String fecha) {
+		return ejbCalcSaldo.maquinaTiempo(iden, fecha);
+	}
+	
+	@GET
+	@Path("avanzar")
+	@Produces(MediaType.APPLICATION_JSON)
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
+	public List<DTSaldo> avanzar(@QueryParam("id") String iden,@QueryParam("date") String fecha) {
+		return ejbCalcSaldo.avanzarProximaFecha(iden, fecha);
 	}
 }
+
 

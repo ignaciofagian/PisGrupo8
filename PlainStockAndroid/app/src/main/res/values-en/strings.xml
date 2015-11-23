@@ -11,8 +11,11 @@
 
     <string name="str_Idioma">Language</string>
     <string name="title_activity_preguntas">Questions</string>
-    <string name="title_activity_pantalla_configuracion">Configuration</string>
-    <string name="str_Reiniciar">Reiniciar</string>
+    <string name="title_activity_pantalla_configuracion">Settings</string>
+    <string name="title_activity_evolucion">Evolution</string>
+
+
+    <string name="str_Reiniciar">Reset</string>
 
 
     <string-array name="freq_notif_array">
@@ -20,4 +23,42 @@
         <item>Normal</item>
         <item>Rare</item>
     </string-array>
+
+    <string-array name="idiomas_array">
+        <item>System Language</item>
+        <item>English</item>
+        <item>Español</item>
+    </string-array>
+
+    <string name="str_SinDatos">Waiting for Data</string>
+    <string name="str_detalles_moment">Moment</string>
+    <string name="str_evolution_balance">Balance:</string>
+    <string name="str_config_date">Date</string>
+    <string name="title_activity_detalles">Details</string>
+    <string name="tvConfig_Fecha">Date</string>
+
+    <string name="str_preg_confirmar">Confirm</string>
+    <string name="str_preguntas_reiniciarPreguntas">Reset Questions</string>
+
+    <string name="str_no_implementado">Not Implemented yet...</string>
+    <string name="str_info_reiniciar">Reset will return your balance to its initial value and restart the game</string>
+    <string name="title_activity_fecha_sistema">Sistem Date</string>
+    <string name="str_advertencia_cambio_fecha">Change the system date will cause it to reset and start again like the first time</string>
+    <string name="str_Aceptar">Accept</string>
+    <string name="str_informacion_reinicio_completo">Simulation has been reset.</string>
+    <string name="str_informacion_maquina_del_tiempo">Simulation has been reset. Date: </string>
+    <string name="str_error">An error has occurred in the application.</string>
+    <string name="str_rango_grafica">Graphic range: </string>
+    <string-array name="sta_rangos_grafica">
+        <item>1d</item>
+        <item>7d</item>
+        <item>14d</item>
+        <item>1m</item>
+        <item>6m</item>
+        <item>1y</item>
+        <item>5y</item>
+        <item>all</item>
+    </string-array>
+    <string name="str_simulation_over">Simulation over</string>
 </resources>
+

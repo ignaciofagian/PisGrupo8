@@ -10,5 +10,6 @@
 
 @interface MPSMainTabBarController : UITabBarController <UITabBarControllerDelegate>
 
+@property (nonatomic) BOOL userAnsweredFirstQuestions;
 
 @end

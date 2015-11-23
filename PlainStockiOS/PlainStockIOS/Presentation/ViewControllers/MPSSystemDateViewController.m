@@ -7,13 +7,8 @@
 //
 
 #import "MPSSystemDateViewController.h"
-#import "BLController.h"
 
 @interface MPSSystemDateViewController ()
-
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBarTitle;
-@property (weak, nonatomic) IBOutlet UILabel *warningLabel;
-@property (weak, nonatomic) IBOutlet UIButton *doneButton;
 
 @end
 
@@ -28,15 +23,6 @@
     
     NSDate *date=[dateFormatter dateFromString:self.systemDateString];
     [self.systemDatePicker setDate:date];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    Language lang = [BLController getInstance].language;
-    self.navBarTitle.title = (lang == ENG) ? @"System Date" : @"Fecha del sistema";
-    self.warningLabel.text = (lang == ENG) ? @"Warning: changing the system date will reset all your progress and start as the first time" : @"Atención: cambiar la fecha del sistema provocará que el mismo se reinicie y vuelva a comenzar como la primera vez";
-    NSString *doneButtonTitle = (lang == ENG) ? @"Done" : @"Aceptar";
-    [self.doneButton setTitle:doneButtonTitle forState:UIControlStateNormal];
 }
 
 - (void)didReceiveMemoryWarning {

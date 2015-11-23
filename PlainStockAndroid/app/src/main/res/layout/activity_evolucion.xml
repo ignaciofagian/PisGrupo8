@@ -20,6 +20,29 @@
 
 
     <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/str_rango_grafica"
+            android:id="@+id/textView4"
+            android:layout_gravity="center" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spRango"
+            android:layout_weight="1"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -32,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Saldo:"
+            android:text="@string/str_evolution_balance"
             android:textStyle="bold"
             android:id="@+id/textView2"
             android:gravity="center|right"
@@ -55,47 +78,12 @@
     </LinearLayout>
 
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_weight="1"
-        android:id="@+id/LinearLayout2">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Go to the next event"
-            android:textStyle="bold"
-
-
-
-            android:id="@+id/textView4"
-              />
-
-        <ImageButton
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/bt_evolucion_next"
-
-            android:src="@drawable/img_evolucion"
-
-            android:tint="@color/_color_green_dark"
-            android:background="@android:color/transparent" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:id="@+id/LinearLayout3">
+        android:id="@+id/LinearLayoutGoToNextDate">
 
         <TextView
             android:layout_width="wrap_content"
@@ -110,12 +98,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Button"
-            android:id="@+id/button2"
+            android:id="@+id/bt_config_reiniciar"
 
-            android:src="@drawable/img_evolucion"
+            android:src="@drawable/img_clock"
 
             android:tint="@color/_color_green_dark"
-            android:background="@android:color/transparent" />/>
+            android:background="@android:color/transparent"/>
     </LinearLayout>
 
 

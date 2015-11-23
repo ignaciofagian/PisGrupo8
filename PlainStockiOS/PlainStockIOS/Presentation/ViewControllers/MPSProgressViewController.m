@@ -8,15 +8,16 @@
 
 #import "MPSProgressViewController.h"
 #import "PlainStockiOS-Swift.h"
-#import "BLController.h"
-#import "AppDelegate.h"
-#import "DataDateCash.h"
 
 @interface MPSProgressViewController () <ChartViewDelegate, UIAlertViewDelegate>
 
+@property (weak, nonatomic) IBOutlet LineChartView *chartView;
 @property (strong, nonatomic) NSDate* gameDate;
 @property (strong, nonatomic) UIDatePicker *timeLeapDatePicker;
-@property (strong, nonatomic) NSMutableArray *balanceHistory;
+@property (weak, nonatomic) IBOutlet UITextField *auxDateTextField;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *botConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navBarTopConstraint;
+@property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
 
 @end
 
@@ -26,47 +27,34 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [BLController getInstance].progressDelegate = self;
-    [self initChart];
+    [self setupChart];
     [self setupTimeLeapDatePicker];
+    [self setupMoneyLabel];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+
+- (void)viewDidAppear:(BOOL)animated
 {
-    //refresh chart and balance label async
-    [self fillChartAndUpdateView];
-    
-    //let this view rotate to landscape
-    AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    appDelegate.restrictRotation = NO;
-    
-    //sets strings for current language
-    Language lang = [BLController getInstance].language;
-    self.navBarTitle.title = (lang == ENG) ? @"Evolution" : @"Mi Evolución";
-    self.balanceLabel.text = (lang == ENG) ? @"Balance: " : @"Saldo: ";
-    self.goToNextEventLabel.text = (lang == ENG) ? @"Go to the next event" : @"Ir a próximo evento";
-    self.goToNextDateLabel.text = (lang == ENG) ? @"Go to the next date" : @"Ir a próxima fecha";
+    [super viewDidAppear:YES];
+    [self setupChart];
+    [self setupTimeLeapDatePicker];
+    [self setupMoneyLabel];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    //prevent other views from rotating
-    AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    appDelegate.restrictRotation = YES;
-}
 
-- (void)initChart
+- (void)setupChart
 {
     _chartView.delegate = self;
     
-    // Setup chart style settings
+  // Setup chart style settings
     _chartView.descriptionText = @"";
-    _chartView.noDataText = @"Loading...";
+    _chartView.noDataTextDescription = @"You need to provide data for the chart.";
     _chartView.highlightEnabled = NO;
     _chartView.dragEnabled = YES;
     [_chartView setScaleEnabled:YES];
-    //_chartView.pinchZoomEnabled = YES;
+    _chartView.pinchZoomEnabled = YES;
     _chartView.drawGridBackgroundEnabled = NO;
+    
     _chartView.leftAxis.drawAxisLineEnabled = NO;
     _chartView.leftAxis.drawGridLinesEnabled = YES;
     _chartView.leftAxis.valueFormatter = [[NSNumberFormatter alloc] init];
@@ -75,103 +63,47 @@
     _chartView.leftAxis.valueFormatter.positiveSuffix = @" $";
     _chartView.leftAxis.labelPosition = YAxisLabelPositionOutsideChart;
     _chartView.leftAxis.spaceTop = 0.15;
+    
     _chartView.xAxis.drawAxisLineEnabled = NO;
     _chartView.xAxis.drawGridLinesEnabled = NO;
     _chartView.xAxis.avoidFirstLastClippingEnabled = YES;
-    //[_chartView.xAxis setLabelFont:[UIFont fontWithName:@"Verdana" size:8]];
-    [_chartView.xAxis setLabelFont:[UIFont fontWithName:_chartView.xAxis.labelFont.fontName size:9]];
+    
     _chartView.rightAxis.enabled = NO;
     _chartView.legend.enabled = NO;
     
-    // Setup the chart baloon marker
+    
+  // Set the chart data
+    [self setDataCount:10.0 range:10.0];
+    
+    
+  // Setup the chart baloon marker
      BalloonMarker *marker = [[BalloonMarker alloc] initWithColor:[UIColor colorWithWhite:180/255. alpha:0.5] font:[UIFont systemFontOfSize:12.0] insets: UIEdgeInsetsMake(8.0, 8.0, 20.0, 8.0)];
      marker.minimumSize = CGSizeMake(80.f, 40.f);
      _chartView.marker = marker;
-}
 
-
-- (void) fillChartAndUpdateView
-{
-    //TODO: Actualmente pide todo al server (TODO), debe pedir a BD un rango a mostrar y falta toda la logica asociada a los rangos
-    //gets balance history from server and updates the chart via delegate call when data is received
-    [[BLController getInstance] getCashHistoryFrom:@"1950-01-01" To:@"2020-01-01" Delegate:self]; //TODO: cambiar con fecha bien y con llamada a db
-}
-
-
-
-#pragma mark - BLController delegate
-
--(void)receivedDateCashHistoryResponse:(WSResponse *)response
-{
-    if (response.error == nil)
+    
+  // Fill the chart under the line
+    LineChartDataSet *chartDataSet = _chartView.data.dataSets[0];
+    chartDataSet.drawFilledEnabled = YES;
+    
+    
+  // Setup the chart face icon
+    NSUInteger chartValuesCount = chartDataSet.yVals.count;
+        
+    if ( (chartValuesCount == 1) || ((chartValuesCount > 1)
+         && ([chartDataSet yValForXIndex:chartValuesCount - 1] >= [chartDataSet yValForXIndex:chartValuesCount - 2])) )
     {
-        //updates the chart
-        NSMutableArray *balanceHistory = [response.data mutableCopy];
-        NSMutableArray *xVals = [[NSMutableArray alloc] init];
-        NSMutableArray *yVals = [[NSMutableArray alloc] init];
-        
-        NSDateFormatter *dbDateFormatter = [[NSDateFormatter alloc] init];
-        NSDateFormatter *chartDateFormatter = [[NSDateFormatter alloc] init];
-        [dbDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-        [chartDateFormatter setDateFormat:@"MM/dd/yyyy\nHH:mm"];
-        
-        
-        NSDate *date;
-        
-        for (int i = 0; i < balanceHistory.count; i++)
-        {
-            DataDateCash *ddc = balanceHistory[i];
-            date = [dbDateFormatter dateFromString: ddc.date];
-            NSString *formattedDate = [chartDateFormatter stringFromDate:date];
-            [xVals addObject:formattedDate];
-            [yVals addObject:[[ChartDataEntry alloc] initWithValue:[ddc.cash longLongValue] xIndex:i]];
-        }
-        
-        LineChartDataSet *chartDataSet = [[LineChartDataSet alloc] initWithYVals:yVals];
-        chartDataSet.drawCubicEnabled = YES;
-        chartDataSet.cubicIntensity = 0.2;
-        chartDataSet.drawCirclesEnabled = NO;
-        chartDataSet.fillAlpha = 1.0;
-        chartDataSet.lineWidth = 2.0;
-        chartDataSet.circleRadius = 5.0;
-        [chartDataSet setColor:[UIColor colorWithRed:104/255.f green:241/255.f blue:175/255.f alpha:1.f]];
-        chartDataSet.fillColor = [UIColor colorWithRed:153/255.f green:217/255.f blue:234/255.f alpha:1.f];
-        chartDataSet.drawHorizontalHighlightIndicatorEnabled = NO;
-        chartDataSet.drawVerticalHighlightIndicatorEnabled = NO;
-        chartDataSet.drawFilledEnabled = YES;
-        
-        LineChartData *data = [[LineChartData alloc] initWithXVals:xVals dataSet:chartDataSet];
-        [data setValueFont:[UIFont systemFontOfSize:9.f]];
-        [data setDrawValues:NO];
-        
-        // Setup the chart emoticon
-        NSUInteger yCount = yVals.count;
-        
-        if ((yCount == 1) || ((yCount > 1) && ([chartDataSet yValForXIndex:yCount - 1] >= [chartDataSet yValForXIndex:yCount - 2])))
-            [self.emoticonImageView setImage:[UIImage imageNamed:@"happy_face"]];
-        else
-            [self.emoticonImageView setImage:[UIImage imageNamed:@"sad_face"]];
-        
-        _chartView.data = data;
-        
-        [_chartView setNeedsDisplay];
-        //[_chartView animateWithXAxisDuration:2.0 yAxisDuration:2.0];
-        [_chartView animateWithXAxisDuration:0.8];
-        
-        
-        //updates current balance label
-        self.moneyLabel.text = [NSString stringWithFormat:@"$ %.2f", [chartDataSet yValForXIndex:yCount - 1]];
-        
+        [self.emoticonImageView setImage:[UIImage imageNamed:@"happy_face"]];
     }
     else
     {
-        UIAlertView *theAlert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                           message:response.error
-                                                          delegate:self
-                                                 cancelButtonTitle:@"OK"
-                                                 otherButtonTitles:nil];
-        [theAlert show];
+        [self.emoticonImageView setImage:[UIImage imageNamed:@"sad_face"]];
     }
+    
+
+  // Add the chart to the view
+    [_chartView setNeedsDisplay];
+    [_chartView animateWithXAxisDuration:2.0 yAxisDuration:2.0];
 }
 
 
@@ -193,6 +125,7 @@
 
     [self.timeLeapDatePicker setMaximumDate:[NSDate date]];
     [self.timeLeapDatePicker setMinimumDate:minDate];
+    
     
     
   // Toolbar setup
@@ -217,6 +150,57 @@
 
 
 
+- (void)setDataCount:(int)count range:(double)range
+{
+    NSMutableArray *xVals = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < count; i++)
+    {
+        [xVals addObject:[@(i + 1998) stringValue]];
+    }
+    
+    NSMutableArray *yVals1 = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < count; i++)
+    {
+        double mult = (range + 1);
+        double val = (double) (arc4random_uniform(mult)) + 20;
+        [yVals1 addObject:[[ChartDataEntry alloc] initWithValue:val xIndex:i]];
+    }
+    
+    LineChartDataSet *cashDataSet = [[LineChartDataSet alloc] initWithYVals:yVals1];
+    cashDataSet.drawCubicEnabled = YES;
+    cashDataSet.cubicIntensity = 0.2;
+    cashDataSet.drawCirclesEnabled = NO;
+    cashDataSet.fillAlpha = 1.0; //TODO: hace el relleno totalmente opaco, verificar
+    cashDataSet.lineWidth = 2.0;
+    cashDataSet.circleRadius = 5.0;
+    //cashDataSet.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f]; //Por el momento no esta decidido si se utilizara indicador vertical
+    [cashDataSet setColor:[UIColor colorWithRed:104/255.f green:241/255.f blue:175/255.f alpha:1.f]];
+    cashDataSet.fillColor = [UIColor colorWithRed:153/255.f green:217/255.f blue:234/255.f alpha:1.f];
+    cashDataSet.drawHorizontalHighlightIndicatorEnabled = NO;
+    cashDataSet.drawVerticalHighlightIndicatorEnabled = NO;
+    
+    LineChartData *data = [[LineChartData alloc] initWithXVals:xVals dataSet:cashDataSet];
+    [data setValueFont:[UIFont systemFontOfSize:9.f]];
+    [data setDrawValues:NO];
+    
+    _chartView.data = data;
+    
+
+}
+
+
+
+
+- (void)setupMoneyLabel
+{
+    LineChartDataSet *chartDataSet = _chartView.data.dataSets[0];
+    NSString* moneyString = [NSString stringWithFormat:@"$ %.2f", [chartDataSet yValForXIndex:chartDataSet.yVals.count - 1]];
+    self.moneyLabel.text = moneyString;
+}
+
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -228,17 +212,12 @@
 
 - (IBAction)showNextEventAlert:(id)sender
 {
-    Language lang = [BLController getInstance].language;
-    NSString *title = (lang == ENG) ? @"Message" : @"Mensaje";
-    NSString *cancel = (lang == ENG) ? @"Cancel" : @"Cancelar";
-    NSString *ok = (lang == ENG) ? @"OK" : @"Aceptar";
-    NSString *msg = (lang == ENG) ? @"Sure you want to move the time forward?" : @"¿Seguro que desea avanzar el tiempo?";
-    UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:title
-                                                     message:msg
+    UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:@"Mensaje"
+                                                     message:@"Seguro que desea avanzar el tiempo?"
                                                     delegate:self
-                                           cancelButtonTitle:cancel
+                                           cancelButtonTitle:@"Cancelar"
                                            otherButtonTitles: nil];
-    [alert addButtonWithTitle:ok];
+    [alert addButtonWithTitle:@"Aceptar"];
     [alert show];
 }
 
@@ -260,6 +239,7 @@
 {
     NSLog(@"goToNextDate");
     [self.view endEditing:YES];
+    
 }
 
 

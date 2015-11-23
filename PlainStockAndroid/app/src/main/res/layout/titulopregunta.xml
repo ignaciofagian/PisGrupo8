@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:text="Questions"
+            android:text="@string/title_activity_preguntas"
             android:gravity="center_vertical|center"
             android:id="@+id/narratitulo"
             android:textColor="#FFFFFF"

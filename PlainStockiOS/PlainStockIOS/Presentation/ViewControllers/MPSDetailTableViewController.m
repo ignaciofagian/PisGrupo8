@@ -1,12 +1,16 @@
+//
+//  DetailTableViewController.m
+//  PlainStockiOS
+//
+//  Created by nacho on 9/6/15.
+//  Copyright (c) 2015 FING. All rights reserved.
+//
+
 #import "MPSDetailTableViewController.h"
 #import "MPSDetailTableViewCell.h"
 #import "BLController.h"
-#import "DataDateCash.h"
-#import "DBManager.h"
 
 @interface MPSDetailTableViewController ()
-
-@property (weak, nonatomic) IBOutlet UINavigationItem *navBarTitle;
 
 @end
 
@@ -17,69 +21,72 @@ static NSString *cellIden = @"cellIden";
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-    [BLController getInstance].detailsDelegate = self;
-    [[BLController getInstance] getCashHistoryFrom:@"2015-10-01" To:@"2015-10-17" Delegate:self];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    Language lang = [BLController getInstance].language;
-    self.navBarTitle.title = (lang == ENG) ? @"Details" : @"Detalles";
-    self.balanceLabel.text = (lang == ENG) ? @"Balance" : @"Saldo";
-    self.momentLabel.text = (lang == ENG) ? @"Moment" : @"Momento";
-}
-
--(void)receivedDateCashHistoryResponse:(WSResponse *)response
-{
-    NSArray *cashHistory = [response getData];
-    NSString *error = [response getError];
     
-    if (error == nil){
+    [super viewDidLoad];
+    BLController *bl = [BLController getInstance];
+    NSString *userId = bl.userId;
+    
+    
+    NSString *urlService =
+    @"http://52.88.80.212:8080/Servidor/rest/app/saldos?";
+    urlService = [urlService stringByAppendingString:@"id="];
+    urlService = [urlService stringByAppendingString:userId];
+    urlService = [urlService stringByAppendingString:@"&desde=0&hasta=0"];
+
+    
+    NSURLRequest * urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:urlService]];
+    NSURLResponse * response = nil;
+    NSError * error = nil;
+    NSData * data = [NSURLConnection sendSynchronousRequest:urlRequest
+                                          returningResponse:&response
+                                                      error:&error];
+    
+    if (error == nil)
+    {
+        // Parse data here
+        NSArray* json = [NSJSONSerialization JSONObjectWithData:data
+                                             options:kNilOptions
+                                             error:&error];
+
         self.balanceHistory = [NSMutableArray array];
-        NSInteger length = [cashHistory count];
-        DataDateCash *first_balance = [cashHistory objectAtIndex:0];
-        NSString *lastvaluestring = first_balance.cash;
-        long lastvalue = [lastvaluestring longLongValue];
         
+        int length = [json count];
+        NSDictionary *firstBalance = [json objectAtIndex:0];
+        NSNumber *balanceFirst = [firstBalance valueForKey:@"saldo"];
+        long lastValue = [balanceFirst longValue];
         
         for (int indexValue = 0; indexValue< length; indexValue++)
         {
-            DataDateCash *balance = [cashHistory objectAtIndex:indexValue];
-        
-            NSString *date = balance.date;
-            NSString *currentValue = balance.cash;
-            long long_current_value = [currentValue longLongValue];
             
-            date = [date substringToIndex:10]; //date is of format 2015/01/01, 10 characaters, time is removed
-        
-            //TODO MAURI: REVISAR LOS PORCENTAJES PORQUE SE ESTA TRUNCANDO MUCHO
-            long porcentaje = -1*((lastvalue- long_current_value)*100)/long_current_value;
-            lastvalue = long_current_value;
+            NSDictionary *balance = [json objectAtIndex:indexValue];
+            
+            NSString *date = [NSString stringWithFormat:[balance valueForKey:@"tiempo"],indexValue];
+            NSNumber *currentValue = [balance valueForKey:@"saldo"];
+            
+            long long_current_value = [currentValue longValue];
+            NSString *saldo = [NSString stringWithFormat:@"%ld", long_current_value];
+            
+            long porcentaje = ((lastValue- long_current_value)/long_current_value)*100;
             NSString *porcentajeString = [NSString stringWithFormat:@"%ld", porcentaje];
             porcentajeString = [porcentajeString stringByAppendingString:@"%"];
+            lastValue = long_current_value;
+            
+            date = [date substringToIndex:10]; //date is of format 2015/01/01, 10 characaters, time is removed
+            
             
             NSDictionary *balance2 = @{
-                                       @"date": date,
-                                       @"percentage": porcentajeString,
-                                       @"mount": currentValue
-                                       };
+                                      @"date": date,
+                                      @"percentage": porcentajeString,
+                                      @"mount": saldo
+                                      };
+      
             [self.balanceHistory addObject:balance2];
+            
         }
-        [_tableView reloadData];
+       
     }
-    else{
-        //tirar una alerta y decidir que hacer aca
-        //TODO MAURI: COPIARLE A ANDROID EL COMPORTAMIENTO DSPS DE MOSTRADO LA ALERTA
-        UIAlertView *theAlert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                           message:error
-                                                          delegate:self
-                                                 cancelButtonTitle:@"OK"
-                                                 otherButtonTitles:nil];
-        [theAlert show];
-    }
+   
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -108,14 +115,7 @@ static NSString *cellIden = @"cellIden";
     
     [cell.lblDate setText:[[self.balanceHistory objectAtIndex:indexPath.row] objectForKey:@"date"]];
     [cell.lblPercentage setText:[[self.balanceHistory objectAtIndex:indexPath.row] objectForKey:@"percentage"]];
-    
-    if ([cell.lblPercentage.text rangeOfString:@"-"].location == NSNotFound) {
-        cell.lblPercentage.textColor=[UIColor greenColor];
-    } else {
-        cell.lblPercentage.textColor=[UIColor redColor];;
-    }
-    
-    
+    cell.lblPercentage.textColor=[UIColor greenColor];
     [cell.lblMount setText:[[self.balanceHistory objectAtIndex:indexPath.row] objectForKey:@"mount"]];
     return cell;
     
