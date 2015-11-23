@@ -17,6 +17,12 @@ public class CacheTreeMap extends ProvBase{
 	
 	public void agregarList(List<Historico> hlist){
 		for(Historico h : hlist){
+			agregarHistorico(h);
+		}
+	}
+	
+	public void agregarHistorico(Historico h){
+		
 			GregorianCalendar timeKey = new GregorianCalendar();
 			timeKey.setTime(h.getFecha());
 			timeKey.set(Calendar.SECOND, 0);
@@ -26,9 +32,7 @@ public class CacheTreeMap extends ProvBase{
 			}
 			cache.put(timeKey, h);
 		}
-
-		
-	}
+	
 	@Override
 	protected Historico findHistorico_interno(long accionId, Calendar fecha) {
 		// TODO Auto-generated method stub

@@ -1,60 +1,164 @@
-//
-//  MPSProgressViewController.m
-//  PlainStockiOS
-//
-//  Created by Bruno Rodao on 9/14/15.
-//  Copyright (c) 2015 FING. All rights reserved.
-//
-
 #import "MPSProgressViewController.h"
 #import "PlainStockiOS-Swift.h"
+#import "BLController.h"
+#import "DBManager.h"
+#import "WSManager.h"
+#import "AppDelegate.h"
+#import "DataDateCash.h"
+#import "WYPopoverController.h"
+#import "MPSDateRangeViewController.h"
 
-@interface MPSProgressViewController () <ChartViewDelegate, UIAlertViewDelegate>
 
-@property (weak, nonatomic) IBOutlet LineChartView *chartView;
-@property (strong, nonatomic) NSDate* gameDate;
+#define ONE_DAY_SECONDS 60*60*24;
+#define ONE_DAY_MILIS 60*60*24*1000;
+#define ONE_AND_HALF_DAY_MILIS 60*60*24*1000*1.5;
+#define MAX_CHART_POINTS_DEFAULT 500;
+#define TIMER_SLEEP 120.0
+#define BTN_BG_COLOR_SELECTE
+
+@interface MPSProgressViewController () <ChartViewDelegate, UIAlertViewDelegate, WYPopoverControllerDelegate, DateRangePopoverDelegate> {
+    
+    WYPopoverController* dateRangePopoverViewController;
+}
+
 @property (strong, nonatomic) UIDatePicker *timeLeapDatePicker;
-@property (weak, nonatomic) IBOutlet UITextField *auxDateTextField;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *botConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navBarTopConstraint;
-@property (weak, nonatomic) IBOutlet UINavigationBar *navigationBar;
+@property (nonatomic) DateRange currentChartDateRange;
+@property (nonatomic) NSInteger maxChartPoints;
 
 @end
 
 @implementation MPSProgressViewController
+{
+    NSTimer *timerChartUpdater;
+}
 
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self setupChart];
+    
+    //To start and stop updater when app goes and comes from backround
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveBackgroundNotification:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveActiveNotification:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    
+   
+    
+    //default range
+    self.currentChartDateRange = oneDay;
+    
+    //max chart points
+    NSDictionary *dicConfig = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"config" ofType:@"plist"]];
+    self.maxChartPoints = [dicConfig objectForKey:@"MAX_CHART_POINTS"] != nil ? [[dicConfig objectForKey:@"MAX_CHART_POINTS"] integerValue] : MAX_CHART_POINTS_DEFAULT;
+    
+    [self setupRangePopoverAppearance];
+    [self initChart];
     [self setupTimeLeapDatePicker];
-    [self setupMoneyLabel];
 }
 
-
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidAppear:YES];
-    [self setupChart];
-    [self setupTimeLeapDatePicker];
-    [self setupMoneyLabel];
+    [super viewWillAppear:animated];
+    
+    //sets strings for current language
+    Language lang = [BLController sharedInstance].language;
+    self.navBarTitle.title = (lang == ENG) ? @"Evolution" : @"Mi Evolución";
+    self.balanceLabel.text = (lang == ENG) ? @"Balance: " : @"Saldo: ";
+    self.rangeLabel.text = (lang == ENG) ? @"Range: " : @"Rango: ";
+    [self.popoverButton setTitle:[self stringFromCurrentRange] forState:UIControlStateNormal];
+    
+    
+    if ([BLController sharedInstance].isOnTimeMachineMode)
+    {
+        self.goToNextDateLabel.hidden = NO;
+        self.dateJumpButton.hidden = NO;
+        self.goToNextDateLabel.text = (lang == ENG) ? @"Go to the next date" : @"Ir a próxima fecha";
+        self.botConstraint.constant = 8;
+    }
+    else
+    {
+        self.goToNextDateLabel.hidden = YES;
+        self.dateJumpButton.hidden = YES;
+        self.botConstraint.constant = -self.goToNextDateLabel.frame.size.height;
+    }
+    
+    //let this view rotate to landscape
+    AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.restrictRotation = NO;
+    
+    //start updater
+    [self startChartUpdaterTimer];
 }
 
 
-- (void)setupChart
+- (void)startChartUpdaterTimer
+{
+    if (timerChartUpdater == nil)
+    {
+        timerChartUpdater = [NSTimer scheduledTimerWithTimeInterval:TIMER_SLEEP target:self selector:@selector(fillChartAndUpdateView) userInfo:nil repeats:YES];
+        [timerChartUpdater fire];
+    }
+}
+
+
+- (void)stopChartUpdaterTimer
+{
+    [timerChartUpdater invalidate];
+    timerChartUpdater = nil;
+}
+
+- (void)resetChartUpdaterTimer
+{
+    if ([timerChartUpdater isValid])
+    {
+        timerChartUpdater.fireDate = [NSDate dateWithTimeIntervalSinceNow:TIMER_SLEEP];
+        [timerChartUpdater fire];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    //prevent other views from rotating
+    AppDelegate* appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.restrictRotation = YES;
+    
+    //Stop updater
+    [self stopChartUpdaterTimer];
+}
+
+- (void) receiveBackgroundNotification:(NSNotification*)notif
+{
+        [self stopChartUpdaterTimer];
+}
+
+- (void) receiveActiveNotification:(NSNotification*)notif
+{
+        [self startChartUpdaterTimer];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    [self.view endEditing:YES];
+}
+
+- (void)initChart
 {
     _chartView.delegate = self;
     
-  // Setup chart style settings
+    // Setup chart style settings
     _chartView.descriptionText = @"";
-    _chartView.noDataTextDescription = @"You need to provide data for the chart.";
+    _chartView.noDataText = @"No data.";
     _chartView.highlightEnabled = NO;
     _chartView.dragEnabled = YES;
     [_chartView setScaleEnabled:YES];
-    _chartView.pinchZoomEnabled = YES;
+    //_chartView.pinchZoomEnabled = YES;
+    _chartView.doubleTapToZoomEnabled = NO;
     _chartView.drawGridBackgroundEnabled = NO;
-    
     _chartView.leftAxis.drawAxisLineEnabled = NO;
     _chartView.leftAxis.drawGridLinesEnabled = YES;
     _chartView.leftAxis.valueFormatter = [[NSNumberFormatter alloc] init];
@@ -63,50 +167,109 @@
     _chartView.leftAxis.valueFormatter.positiveSuffix = @" $";
     _chartView.leftAxis.labelPosition = YAxisLabelPositionOutsideChart;
     _chartView.leftAxis.spaceTop = 0.15;
-    
     _chartView.xAxis.drawAxisLineEnabled = NO;
     _chartView.xAxis.drawGridLinesEnabled = NO;
     _chartView.xAxis.avoidFirstLastClippingEnabled = YES;
-    
+    //[_chartView.xAxis setLabelFont:[UIFont fontWithName:@"Verdana" size:8]];
+    [_chartView.xAxis setLabelFont:[UIFont fontWithName:_chartView.xAxis.labelFont.fontName size:9]];
     _chartView.rightAxis.enabled = NO;
     _chartView.legend.enabled = NO;
     
-    
-  // Set the chart data
-    [self setDataCount:10.0 range:10.0];
-    
-    
-  // Setup the chart baloon marker
+    // Setup the chart baloon marker
      BalloonMarker *marker = [[BalloonMarker alloc] initWithColor:[UIColor colorWithWhite:180/255. alpha:0.5] font:[UIFont systemFontOfSize:12.0] insets: UIEdgeInsetsMake(8.0, 8.0, 20.0, 8.0)];
      marker.minimumSize = CGSizeMake(80.f, 40.f);
      _chartView.marker = marker;
-
-    
-  // Fill the chart under the line
-    LineChartDataSet *chartDataSet = _chartView.data.dataSets[0];
-    chartDataSet.drawFilledEnabled = YES;
-    
-    
-  // Setup the chart face icon
-    NSUInteger chartValuesCount = chartDataSet.yVals.count;
-        
-    if ( (chartValuesCount == 1) || ((chartValuesCount > 1)
-         && ([chartDataSet yValForXIndex:chartValuesCount - 1] >= [chartDataSet yValForXIndex:chartValuesCount - 2])) )
-    {
-        [self.emoticonImageView setImage:[UIImage imageNamed:@"happy_face"]];
-    }
-    else
-    {
-        [self.emoticonImageView setImage:[UIImage imageNamed:@"sad_face"]];
-    }
-    
-
-  // Add the chart to the view
-    [_chartView setNeedsDisplay];
-    [_chartView animateWithXAxisDuration:2.0 yAxisDuration:2.0];
 }
 
 
+- (void) fillChartAndUpdateView
+{
+    double iniDateMilis = [self getInitialDateForCurrentRange];
+    NSMutableArray *balanceHistory = [[DBManager sharedInstance] getCashHistoryFrom:iniDateMilis to:DBL_MAX];
+    NSMutableArray *chartBalanceHistory = [self getBalanceHistoryForChart:balanceHistory];
+    
+    NSMutableArray *xVals = [[NSMutableArray alloc] init];
+    NSMutableArray *yVals = [[NSMutableArray alloc] init];
+    
+    NSDateFormatter *dbDateFormatter = [[NSDateFormatter alloc] init];
+    NSDateFormatter *chartDateFormatter = [[NSDateFormatter alloc] init];
+    [dbDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+    [chartDateFormatter setDateFormat:@"dd/MM/yy\nHH:mm"];
+    NSDate *date;
+    
+    for (int i = 0; i < chartBalanceHistory.count; i++)
+    {
+        DataDateCash *ddc = chartBalanceHistory[i];
+        date = [dbDateFormatter dateFromString: ddc.date];
+        NSString *formattedDate = [chartDateFormatter stringFromDate:date];
+        [xVals addObject:formattedDate];
+        [yVals addObject:[[ChartDataEntry alloc] initWithValue:[ddc.cash doubleValue] xIndex:i]];
+    }
+    
+    LineChartDataSet *chartDataSet = [[LineChartDataSet alloc] initWithYVals:yVals];
+    chartDataSet.drawCubicEnabled = NO;
+    chartDataSet.cubicIntensity = 0.2;
+    chartDataSet.drawCirclesEnabled = NO;
+    chartDataSet.fillAlpha = 0.9;
+    chartDataSet.lineWidth = 3.0;
+    chartDataSet.circleRadius = 5.0;
+    [chartDataSet setColor:[UIColor colorWithRed:104/255.f green:241/255.f blue:175/255.f alpha:1.f]];
+    chartDataSet.fillColor = [UIColor colorWithRed:153/255.f green:217/255.f blue:234/255.f alpha:0.9];
+    chartDataSet.drawHorizontalHighlightIndicatorEnabled = NO;
+    chartDataSet.drawVerticalHighlightIndicatorEnabled = NO;
+    chartDataSet.drawFilledEnabled = YES;
+    
+    LineChartData *data = [[LineChartData alloc] initWithXVals:xVals dataSet:chartDataSet];
+    [data setValueFont:[UIFont systemFontOfSize:9.f]];
+    [data setDrawValues:NO];
+
+    // Setup the chart emoticon
+    NSUInteger count = balanceHistory.count;
+    
+    if (count < 2)
+        [self.emoticonImageView setImage:[UIImage imageNamed:@"happy_face"]];
+    else
+    {
+        double lastCash = [[[balanceHistory lastObject] cash] doubleValue];
+        double nextToLastCash = [[[balanceHistory objectAtIndex:count - 2] cash] doubleValue];
+        
+        if (lastCash >= nextToLastCash)
+            [self.emoticonImageView setImage:[UIImage imageNamed:@"happy_face"]];
+        else
+            [self.emoticonImageView setImage:[UIImage imageNamed:@"sad_face"]];
+    }
+    
+    _chartView.data = data;
+    
+    [_chartView setNeedsDisplay];
+    [_chartView animateWithXAxisDuration:0.8];
+    
+    
+    //updates current balance label
+    if (balanceHistory.count > 0)
+        self.moneyLabel.text = [NSString stringWithFormat:@"$%.1f", [[[balanceHistory lastObject] cash] doubleValue]];
+}
+
+
+- (NSMutableArray *)getBalanceHistoryForChart:(NSMutableArray *)balanceHistory
+{
+    NSMutableArray *res = [[NSMutableArray alloc] init];
+    
+    if (self.maxChartPoints > balanceHistory.count)
+        res = balanceHistory;
+    else
+    {
+        int skipCount = ceil((float)balanceHistory.count / (float)self.maxChartPoints);
+        int i;
+        
+        for (i = 0; i < balanceHistory.count; i += skipCount)
+            [res addObject:balanceHistory[i]];
+        
+        if (i < balanceHistory.count)
+            [res addObject: [balanceHistory lastObject]];
+    }
+    return res;
+}
 
 - (void)setupTimeLeapDatePicker
 {
@@ -116,16 +279,16 @@
     self.timeLeapDatePicker.datePickerMode = UIDatePickerModeDate;
     self.timeLeapDatePicker.backgroundColor =  [UIColor colorWithWhite:1.0 alpha:0.90];
     
+  // Picker max, min and current dates
+    NSTimeInterval oneDay = ONE_DAY_SECONDS;
+    NSDate *minDate = [[BLController sharedInstance].timeMachineDate dateByAddingTimeInterval: oneDay];
     
-  // Picker max and min dates
-    NSString *str =@"01/01/1950";
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-    [formatter setDateFormat:@"MM/dd/yyyy"];
-    NSDate *minDate = [formatter dateFromString:str];
-
+    if ([minDate compare:[NSDate date]] != NSOrderedAscending) //(minDate >= current_date)
+        minDate = [NSDate date];
+    
     [self.timeLeapDatePicker setMaximumDate:[NSDate date]];
     [self.timeLeapDatePicker setMinimumDate:minDate];
-    
+    self.timeLeapDatePicker.date = minDate;
     
     
   // Toolbar setup
@@ -134,70 +297,36 @@
     [toolbar setTranslucent:YES];
     toolbar.alpha = 0.9;
     
+    UIBarButtonItem *cancelButton =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                               target:self
+                                                                               action:@selector(cancelDateSelection)];
+    
     UIBarButtonItem *flexibleSpace =[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                                  target:self
                                                                                  action:nil];
     
     UIBarButtonItem *doneButton =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                target:self
-                                                                               action:@selector(goToNextDate:)];
+                                                                               action:@selector(doneSelectingDate)];
     
-    [toolbar setItems:@[flexibleSpace, doneButton]];
+    [toolbar setItems:@[cancelButton, flexibleSpace, doneButton]];
+    
     
     [self.auxDateTextField setInputView:self.timeLeapDatePicker];
     [self.auxDateTextField setInputAccessoryView:toolbar];
 }
 
 
-
-- (void)setDataCount:(int)count range:(double)range
-{
-    NSMutableArray *xVals = [[NSMutableArray alloc] init];
+- (BOOL)isSameDay:(NSDate*)date1 otherDay:(NSDate*)date2 {
+    NSCalendar* calendar = [NSCalendar currentCalendar];
     
-    for (int i = 0; i < count; i++)
-    {
-        [xVals addObject:[@(i + 1998) stringValue]];
-    }
+    unsigned unitFlags = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+    NSDateComponents* comp1 = [calendar components:unitFlags fromDate:date1];
+    NSDateComponents* comp2 = [calendar components:unitFlags fromDate:date2];
     
-    NSMutableArray *yVals1 = [[NSMutableArray alloc] init];
-    
-    for (int i = 0; i < count; i++)
-    {
-        double mult = (range + 1);
-        double val = (double) (arc4random_uniform(mult)) + 20;
-        [yVals1 addObject:[[ChartDataEntry alloc] initWithValue:val xIndex:i]];
-    }
-    
-    LineChartDataSet *cashDataSet = [[LineChartDataSet alloc] initWithYVals:yVals1];
-    cashDataSet.drawCubicEnabled = YES;
-    cashDataSet.cubicIntensity = 0.2;
-    cashDataSet.drawCirclesEnabled = NO;
-    cashDataSet.fillAlpha = 1.0; //TODO: hace el relleno totalmente opaco, verificar
-    cashDataSet.lineWidth = 2.0;
-    cashDataSet.circleRadius = 5.0;
-    //cashDataSet.highlightColor = [UIColor colorWithRed:244/255.f green:117/255.f blue:117/255.f alpha:1.f]; //Por el momento no esta decidido si se utilizara indicador vertical
-    [cashDataSet setColor:[UIColor colorWithRed:104/255.f green:241/255.f blue:175/255.f alpha:1.f]];
-    cashDataSet.fillColor = [UIColor colorWithRed:153/255.f green:217/255.f blue:234/255.f alpha:1.f];
-    cashDataSet.drawHorizontalHighlightIndicatorEnabled = NO;
-    cashDataSet.drawVerticalHighlightIndicatorEnabled = NO;
-    
-    LineChartData *data = [[LineChartData alloc] initWithXVals:xVals dataSet:cashDataSet];
-    [data setValueFont:[UIFont systemFontOfSize:9.f]];
-    [data setDrawValues:NO];
-    
-    _chartView.data = data;
-    
-
-}
-
-
-
-
-- (void)setupMoneyLabel
-{
-    LineChartDataSet *chartDataSet = _chartView.data.dataSets[0];
-    NSString* moneyString = [NSString stringWithFormat:@"$ %.2f", [chartDataSet yValForXIndex:chartDataSet.yVals.count - 1]];
-    self.moneyLabel.text = moneyString;
+    return [comp1 day]   == [comp2 day] &&
+    [comp1 month] == [comp2 month] &&
+    [comp1 year]  == [comp2 year];
 }
 
 
@@ -210,18 +339,6 @@
 
 #pragma mark - Actions
 
-- (IBAction)showNextEventAlert:(id)sender
-{
-    UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:@"Mensaje"
-                                                     message:@"Seguro que desea avanzar el tiempo?"
-                                                    delegate:self
-                                           cancelButtonTitle:@"Cancelar"
-                                           otherButtonTitles: nil];
-    [alert addButtonWithTitle:@"Aceptar"];
-    [alert show];
-}
-
-
 - (IBAction)showTimeLeapDatePicker:(id)sender
 {
     [self.auxDateTextField becomeFirstResponder];
@@ -229,34 +346,76 @@
     
 }
 
-- (void)goToNextEvent
+- (void)doneSelectingDate
 {
-    NSLog(@"goToNextEvent");
+    //Ask the user for confirmation before jumping forward in time
+    Language lang = [BLController sharedInstance].language;
+    NSString *title = (lang == ENG) ? @"Message" : @"Mensaje";
+    NSString *cancel = (lang == ENG) ? @"No" : @"No";
+    NSString *ok = (lang == ENG) ? @"Yes" : @"Si";
+    NSString *msg = (lang == ENG) ? @"Jump on time? " : @"Saltar en el timepo?";
+    UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:title
+                                                     message:msg
+                                                    delegate:self
+                                           cancelButtonTitle:cancel
+                                           otherButtonTitles: nil];
+    [alert addButtonWithTitle:ok];
+    alert.tag = 1;
+    [alert show];
     
-}
-
-- (void)goToNextDate:(id)sender
-{
-    NSLog(@"goToNextDate");
     [self.view endEditing:YES];
-    
 }
 
 
-
-#pragma mark - ChartViewDelegate
-
-- (void)chartValueSelected:(ChartViewBase * __nonnull)chartView entry:(ChartDataEntry * __nonnull)entry dataSetIndex:(NSInteger)dataSetIndex highlight:(ChartHighlight * __nonnull)highlight
+- (void)cancelDateSelection
 {
-
-    
+    [self.view endEditing:YES];
 }
 
 
-- (void)chartValueNothingSelected:(ChartViewBase * __nonnull)chartView
+- (void)jumpForwardInTime
 {
-
+    NSLog(@"jumpForwardInTime");
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSString *jumpDateStr = [dateFormatter stringFromDate:self.timeLeapDatePicker.date];
+    WSResponse *jumpDateResponse = [[WSManager sharedInstance] timeJumpToDateSynchronous:jumpDateStr];
     
+    if (jumpDateResponse.error == nil)
+    {
+        [[BLController sharedInstance] setTimeMachineDate:self.timeLeapDatePicker.date];
+        [self.timeLeapDatePicker setMinimumDate:self.timeLeapDatePicker.date];
+        
+        if ([self isSameDay:self.timeLeapDatePicker.minimumDate otherDay:self.timeLeapDatePicker.maximumDate])
+        {
+            //Tell the user he has reached the end of time machine mode
+            Language lang = [BLController sharedInstance].language;
+            NSString *title = (lang == ENG) ? @"Message" : @"Mensaje";
+            NSString *ok = (lang == ENG) ? @"OK" : @"Aceptar";
+            NSString *msg = (lang == ENG) ? @"Reached the end of simulation, now game will continue on actual date." : @"Has llegado al fin de la simulación, ahora el juego seguira en la fecha real.";
+            UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:title
+                                                             message:msg
+                                                            delegate:self
+                                                   cancelButtonTitle:ok
+                                                   otherButtonTitles: nil];
+            alert.tag = 0;
+            [alert show];
+            
+            
+            //Reached the end of simulation, now game continues from actual date
+            [[BLController sharedInstance] setIsOnTimeMachineMode:NO];
+            [self viewWillAppear:NO];
+        }
+        else
+        {
+            [self resetChartUpdaterTimer]; //updates view and resets timer
+        }
+        
+    }
+    else
+    {
+        [[BLController sharedInstance] showConnectionErrorAlert];
+    }
 }
 
 
@@ -264,9 +423,9 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == 1)
+    if (alertView.tag == 1 && buttonIndex == 1)
     {
-        [self goToNextEvent];
+        [self jumpForwardInTime];
     }
 }
 
@@ -276,18 +435,194 @@
 {
     if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
     {
-
+        [self.view endEditing:YES];
+        [dateRangePopoverViewController dismissPopoverAnimated:YES];
         [self.tabBarController.tabBar setHidden:YES];
-        self.botConstraint.constant = - (self.dateJumpButton.frame.origin.y + self.dateJumpButton.frame.size.height - self.moneyLabel.frame.origin.y);
         self.navBarTopConstraint.constant = - self.navigationBar.bounds.size.height;
+        self.botConstraint.constant = - (self.goToNextDateLabel.frame.origin.y + self.dateJumpButton.frame.size.height - self.rangeLabel.frame.origin.y - 8);
     }
     else
     {
         [self.tabBarController.tabBar setHidden:NO];
-        self.botConstraint.constant = 33;
         self.navBarTopConstraint.constant = 0;
         
+        if ([BLController sharedInstance].isOnTimeMachineMode)
+            self.botConstraint.constant = 8;
+        else
+            self.botConstraint.constant = -self.goToNextDateLabel.frame.size.height;
     }
+}
+
+
+#pragma mark - Popover Delegate
+
+- (void)setupRangePopoverAppearance
+{
+    UIColor *blueColor = [UIColor colorWithRed:153/255.f green:217/255.f blue:234/255.f alpha:1.0];
+    UIColor *greenColor = [UIColor colorWithRed:104/255.f green:241/255.f blue:175/255.f alpha:0.5];
+    UIColor *clearColor = [UIColor clearColor];
+    
+    //general config
+    [WYPopoverController setDefaultTheme:[WYPopoverTheme themeForIOS7]];
+    
+    WYPopoverBackgroundView *popoverAppearance = [WYPopoverBackgroundView appearance];
+
+    //border
+    [popoverAppearance setOuterCornerRadius:6];
+    [popoverAppearance setInnerCornerRadius:2];
+    [popoverAppearance setBorderWidth:8];
+    
+    //arrow
+    [popoverAppearance setArrowHeight:20];
+    [popoverAppearance setArrowBase:30];
+    
+    //shadow
+    [popoverAppearance setOuterShadowBlurRadius:8];
+    [popoverAppearance setInnerShadowBlurRadius:8];
+    [popoverAppearance setOuterShadowOffset:CGSizeMake(0, 0)];
+    [popoverAppearance setInnerShadowOffset:CGSizeMake(0, 0)];
+    [popoverAppearance setGlossShadowOffset:CGSizeMake(0, 0)];
+    
+    //color
+    [popoverAppearance setFillTopColor:blueColor];
+    [popoverAppearance setFillBottomColor:greenColor];
+    
+    [popoverAppearance setOuterStrokeColor:clearColor];
+    [popoverAppearance setInnerStrokeColor:clearColor];
+    
+    [popoverAppearance setOuterShadowColor:blueColor];
+    [popoverAppearance setInnerShadowColor:blueColor];
+    [popoverAppearance setGlossShadowColor:blueColor];
+    
+    //Creation
+    
+    MPSDateRangeViewController *dateRangeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WYSettingsViewController"];
+    dateRangeViewController.preferredContentSize = CGSizeMake(160, 180);
+    dateRangeViewController.modalInPopover = NO; //so clicking outside dismisses popover
+    dateRangeViewController.delegate = self;
+    
+    dateRangePopoverViewController = [[WYPopoverController alloc] initWithContentViewController:dateRangeViewController];
+    dateRangePopoverViewController.delegate = self;
+    
+    UIView *popBtn = (UIView *)self.popoverButton;
+    dateRangePopoverViewController.passthroughViews = @[popBtn];
+    
+}
+
+
+- (IBAction)popoverBtnPressed:(id)sender
+{
+    if ([dateRangePopoverViewController isPopoverVisible])
+    {
+        [dateRangePopoverViewController dismissPopoverAnimated:YES];
+    }
+    else
+    {
+        [dateRangePopoverViewController presentPopoverFromRect:self.popoverButton.bounds inView:self.popoverButton permittedArrowDirections:WYPopoverArrowDirectionAny animated:YES options:WYPopoverAnimationOptionFadeWithScale];
+    }
+}
+
+
+- (NSString *)stringFromCurrentRange
+{
+    NSString * res;
+    Language l = ([BLController sharedInstance].language == ENG) ? ENG : SPA;
+    
+    switch (self.currentChartDateRange) {
+        case oneDay:
+            res = l == ENG ? @"One day" : @"Un día";
+            break;
+        case oneWeek:
+            res = l == ENG ? @"One week" : @"Una semana";
+            break;
+        case twoWeeks:
+            res = l == ENG ? @"Two weeks" : @"Dos semanas";
+            break;
+        case oneMonth:
+            res = l == ENG ? @"One month" : @"Un mes";
+            break;
+        case sixMonths:
+            res = l == ENG ? @"Six months" : @"Seis meses";
+            break;
+        case oneYear:
+            res = l == ENG ? @"One year" : @"Un año";
+            break;
+        case fiveYears:
+            res = l == ENG ? @"Five years" : @"Cinco años";
+            break;
+        case All:
+            res = l == ENG ? @"All" : @"Todo";
+            break;
+        default:
+            res = @"?";
+            break;
+    }
+    return res;
+}
+
+- (double)getInitialDateForCurrentRange
+{
+    double res;
+    
+    switch (self.currentChartDateRange) {
+        case oneDay:
+        {
+            res = [BLController sharedInstance].isOnTimeMachineMode ? 60*60*24*1000*1.5 : ONE_DAY_MILIS; //cause 1-day granularity on time machine
+            break;
+        }
+        case oneWeek:
+            res = 7.0 * ONE_DAY_MILIS;
+            break;
+        case twoWeeks:
+            res = 14.0 * ONE_DAY_MILIS;
+            break;
+        case oneMonth:
+            res = 30.0 * ONE_DAY_MILIS;
+            break;
+        case sixMonths:
+            res = 30.0 * 6.0 * ONE_DAY_MILIS;
+            break;
+        case oneYear:
+            res = 365.0 * ONE_DAY_MILIS;
+            break;
+        case fiveYears:
+            res = 365.0 * 5.0 * ONE_DAY_MILIS;
+            break;
+        case All:
+            res = 0.0;
+            break;
+        default:
+            res = 0.0;
+            break;
+    }
+    
+    if (res != 0)
+    {
+        if ([BLController sharedInstance].isOnTimeMachineMode)
+        {
+            res = [[BLController sharedInstance].timeMachineDate timeIntervalSince1970]*1000 - res;
+            NSLog(@"timeMachineDate = %@", [BLController sharedInstance].timeMachineDate);
+        }
+        else
+        {
+            res = [BLController sharedInstance].lastDatePersisted - res;
+            NSLog(@"lastDatePersisted = %f", [BLController sharedInstance].lastDatePersisted);
+        }
+    }
+    
+    
+    return res;
+}
+
+
+
+-(void) DateRangePopoverSelectedRange:(NSInteger)selectedRange
+{
+    self.currentChartDateRange = selectedRange;
+    [self.popoverButton setTitle:[self stringFromCurrentRange] forState:UIControlStateNormal];
+    [dateRangePopoverViewController dismissPopoverAnimated:YES];
+    [self resetChartUpdaterTimer];
+    [self.chartView fitScreen]; //resets to initial zoom
 }
 
 

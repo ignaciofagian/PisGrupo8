@@ -322,9 +322,11 @@ public class EjbPaquete implements IEjbPaquete {
 		System.out.println("############# Paquete - " + dtPaquete.getNombre() + " creado con exito #########");
 		if (dtPaquete.getTipo() != 0){
 			PaqueteAlgoritmico pa = (PaqueteAlgoritmico)nuevoPaquete;
-			ejbSH.crearHistoriaDiariaAlgoritmo(pa);
+			pa.checkearAcciones();
 			em.flush();
-			ejbSH.calcularEvolucionAlgoritmo(pa);
+			ejbSH.crearHistoriaDiariaAlgoritmo(pa);
+			
+			//ejbSH.calcularEvolucionAlgoritmo(pa);
 		}
 	}
 	

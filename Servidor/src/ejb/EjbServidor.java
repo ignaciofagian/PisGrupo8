@@ -180,7 +180,16 @@ public class EjbServidor implements IEjbServidor, IEjbServidorRemote {
 		return res;
 	}
 	
-
+	private void activar(String identificador,Portafolio p) {
+		if (!p.isHistorico()){
+			Date d= new Date(Calendar.getInstance().getTimeInMillis());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			ejbSH.avanzarProximaFecha(identificador, sdf.format(d));
+		}
+		em.flush();
+	}
+		
+	
 	/*private void actualizarSaldo2(Calendar ahora,Portafolio p) {
 		JPAProveedorValor jpa = new JPAProveedorValor(em);
 		boolean exito = false;
@@ -223,7 +232,7 @@ public class EjbServidor implements IEjbServidor, IEjbServidorRemote {
 		}
 	}
 	
-	//@EJB IEjbCalculoSaldoHist ejbSH;
+	@EJB IEjbCalculoSaldoHist ejbSH;
 	
 	public List<DTSaldo> obtenerSaldoHistorico(String identificador, long desdeFecha, long hastaFecha) {
 		try {
@@ -232,6 +241,9 @@ public class EjbServidor implements IEjbServidor, IEjbServidorRemote {
 			}
 			Query q = em.createQuery("Select c.portafolio from Cliente c Where c.idTelefono = :iden");
 			Portafolio p = (Portafolio)q.setParameter("iden", identificador).getSingleResult();
+			if (!p.isActivo()){
+				activar(identificador,p);
+			}
 			actualizarFechaAcceso(p);
 			Long id = (Long) p.getId();
 			TypedQuery<SaldoHistorico> qs = em.createQuery(
@@ -257,7 +269,12 @@ public class EjbServidor implements IEjbServidor, IEjbServidorRemote {
 			return new ArrayList<DTSaldo>(Arrays.asList(Invalido()));
 		}
 	}
-		
+
+
+
+
+
+
 	public  DTSaldo Invalido(){
 		return new DTSaldo("invalid",0);
 	}
@@ -298,6 +315,7 @@ public class EjbServidor implements IEjbServidor, IEjbServidorRemote {
 			 ua_plus1.add(Calendar.HOUR_OF_DAY, 1);
 			 if (p.getUltimoAcceso().after(p.getUltimoAcceso())){
 				 p.setUltimoAcceso(Calendar.getInstance());
+				 p.setActivo(true);
 			 }
 		 }
 	 }
@@ -310,6 +328,9 @@ public class EjbServidor implements IEjbServidor, IEjbServidorRemote {
 			Cliente c = cargarClienteConPortafolio(identificador);//c.getPortafolio();
 			if (c == null) return Invalido();
 			Portafolio p = c.getPortafolio();
+			if (!p.isActivo()){
+				activar(identificador,p);
+			}
 			actualizarFechaAcceso(p);
 			double saldo = p.getUltimoSaldo();
 			int s= (int)Math.round(saldo);

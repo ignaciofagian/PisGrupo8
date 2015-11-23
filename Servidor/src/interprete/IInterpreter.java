@@ -3,6 +3,7 @@ package interprete;
 import java.util.Calendar;
 
 import ejb.IEjbAlgoritmo;
+import model.PaqueteAlgoritmico;
 
 public interface IInterpreter {
 
@@ -17,4 +18,7 @@ public interface IInterpreter {
 	void setDebug(boolean debug);
 	boolean getDebug();
 	IEjbAlgoritmo getEJBAlgoritmo();
+	
+	PaqueteAlgoritmico getPA();
+	void setPA(PaqueteAlgoritmico pa);
 }

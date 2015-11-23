@@ -1,0 +1,11 @@
+/*
+ LocalizableSPA.strings
+ PlainStockiOS
+ 
+ Created by brodao on 11/8/15.
+ Copyright © 2015 FING. All rights reserved.
+ */
+
+
+// ViewName
+"TxtDsc (same as Localizable.strings)" = "Real text in spanish";

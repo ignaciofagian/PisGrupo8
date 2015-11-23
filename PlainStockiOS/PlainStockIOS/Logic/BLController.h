@@ -1,39 +1,32 @@
-//
-//  BLController.h
-//  PlainStockiOS
-//
-//  Created by Bruno Rodao on 10/3/15.
-//  Copyright (c) 2015 FING. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "WSResponse.h"
 
-@protocol BLControllerDelegate <NSObject>
-
-@optional
-- (void)questionsResponseReceived:(NSArray *)questions;
-- (void)userRegistrationFinished:(NSString *)msg;
-
-@end
-
+typedef NS_ENUM(NSInteger, Language) {
+    ENG,
+    SPA,
+};
 
 
 @interface BLController : NSObject
 
-+ (BLController  *)getInstance;
++ (BLController  *)sharedInstance;
 
+@property (nonatomic) Language language;
 @property (strong, nonatomic) NSString *userId;
-@property (nonatomic) NSTimeInterval *systemDateOffset; //Seconds between system date and current date
-@property (strong, nonatomic) NSArray *questions;
-@property (strong, atomic) NSMutableArray *cashHistory;
+@property (nonatomic) BOOL isOnTimeMachineMode;
+@property (strong, nonatomic) NSDate *timeMachineDate;
+@property (nonatomic) double lastDatePersisted; //epoch (miliseconds)
 
+-(void)setLanguage:(Language)language;
+-(void)setUserId:(NSString *)userId;
+-(void)setIsOnTimeMachineMode:(BOOL)isOnTimeMachineMode;
+-(void)setTimeMachineDate:(NSDate *)timeMachineDate;
 
-- (void) registerUserWithID:(NSString *)userID;
-- (NSArray *) getGeneralQuestions;
-- (NSMutableArray *) getCashHistory;
+-(void)startCashHistoryUpdaterIfNeeded;
+-(void)stopCashHistoryUpdater;
 
-@property (weak, nonatomic) id<BLControllerDelegate> loginViewControllerDelegate;
-@property (weak, nonatomic) id<BLControllerDelegate> questionsViewControllerDelegate;
+-(void)showConnectionErrorAlert;
+-(void)showDBErrorAlert;
 
 @end

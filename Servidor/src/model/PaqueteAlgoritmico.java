@@ -102,11 +102,17 @@ public class PaqueteAlgoritmico extends Paquete {
 		return cambio;
 	}
 	
-	private void actualizarSaldoEquivalente(){
+	private Historico actualizarSaldoEquivalente(){
 		checkearAcciones();
-		equivalente.agregarHistorico(fechaCalculo.getTime(), this.getValorTotal());
-		accionHistoria.agregarHistorico(fechaCalculo.getTime(), this.getValorTotal());
+		if (!recalcular) equivalente.agregarHistorico(fechaCalculo.getTime(), this.getValorTotal());
+		return accionHistoria.agregarHistorico(fechaCalculo.getTime(), this.nominal);
 	}
+	
+	public void agregarEquivalente(){
+		getAccionEquivalente().agregarHistorico(fechaCalculo.getTime(), this.getValorTotal());
+	}
+	
+	
 	
 	public String getAlgoritmo() {
 		return algoritmo;
@@ -116,10 +122,10 @@ public class PaqueteAlgoritmico extends Paquete {
 		this.algoritmo = algoritmo;
 	}
 	
-	public void calcularValorPorVarMercado(IProveedorValor prov,Calendar ahora){
+	public Historico calcularValorPorVarMercado(IProveedorValor prov,Calendar ahora){
 		double ratio = getValorRatio(fechaCalculo, ahora, prov);
 		if (nominal == null){
-			nominal = 100.0; //TODO: MAL!!!!!!!!!
+			nominal = 100.0; 
 		}
 		else{
 			nominal = nominal * ratio;
@@ -128,7 +134,7 @@ public class PaqueteAlgoritmico extends Paquete {
 		inversion = inversion * ratio; 
 		fechaCalculo = ahora;
 		
-		actualizarSaldoEquivalente();
+		return actualizarSaldoEquivalente();
 	}
 	
 
@@ -137,8 +143,7 @@ public class PaqueteAlgoritmico extends Paquete {
 		double cantidadComprada = Math.min(dolares, disponible);
 		disponible = disponible - cantidadComprada;
 		inversion = inversion + cantidadComprada;
-		//accionDebug.setValorActual(this.inversion);
-		//accionDebug.agregarHistorico(this.getFechaCalculo().getTime(), disponible, inversion);	
+
 	}
 	
 	public void vender(double dolares){
@@ -169,8 +174,7 @@ public class PaqueteAlgoritmico extends Paquete {
 				disponible += cantidadEnShort;
 			}
 		}
-		//accionDebug.setValorActual(this.inversion);
-		//accionDebug.agregarHistorico(this.getFechaCalculo().getTime(), disponible, inversion);
+
 	}
 
 	@Override

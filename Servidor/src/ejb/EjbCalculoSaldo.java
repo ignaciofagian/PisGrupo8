@@ -413,6 +413,7 @@ public class EjbCalculoSaldo implements IEjbCalculoSaldoHist {
 		Calendar now = Calendar.getInstance();
 		if (proxFecha.after(now)) proxFecha = now;
 		calcularSaldoHistoricoUsuario(p, proxFecha);
+		p.setActivo(true);
 		em.flush();
 		return ejbServidor.obtenerSaldoHistorico(identificador, inicio, p.getUltimaFechaSaldo().getTimeInMillis());
 	}
@@ -421,6 +422,8 @@ public class EjbCalculoSaldo implements IEjbCalculoSaldoHist {
 	
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void crearHistoriaDiariaAlgoritmo(PaqueteAlgoritmico p){
+		em.flush();
+		long nanosInicio = System.nanoTime();
 		boolean deprecated = p.isDeprecated();
 		if (p.getPrimerFecha() == null){
 			p.setPrimerFecha(ejbPaquete.getPrimerFechaPaquete(p));
@@ -453,28 +456,39 @@ public class EjbCalculoSaldo implements IEjbCalculoSaldoHist {
 			cache.setFallback(new JPAProveedorValor(em));
 			//ProvFromMap val = new ProvFromMap();
 			cache.setearHistoricos(historicos, true);
+			
+			CacheTreeMap ch = new CacheTreeMap();
+			ch.setFallback(new JPAProveedorValor(em));
+			
+			IInterpreter inter = new InterpreterController();
+			ejbAlgoritmo.setCache(ch);
+			inter.setEJBAlgoritmo(ejbAlgoritmo);
+			inter.setPA(p);
+			
 			p.setFechaCalculo(inicio);
+			p.setRecalcular(true);
 			for (Calendar c : cache.getFechas()) {
-				//val.getM().putAll(cache.getMap(c));
-				p.calcularValorPorVarMercado(cache, c);
+				Historico h = p.calcularValorPorVarMercado(cache, c);
+				ch.agregarHistorico(h);
+				inter.evaluate(p.getId(), p.getAlgoritmo(),c);
+				p.agregarEquivalente();
 			}
+			inter.setPA(null);
+			p.setRecalcular(false);
 			p.setDeprecated(deprecated);
+			System.out.println("termina calculo evolucion algo "  + p.getId() + " t=" + (System.nanoTime() - nanosInicio)/ (1000* 1000) + " ms");
 		} catch(RuntimeException ex) {
 			System.out.println("Error al calcular historia diaria algo " + p.getId());
-			ex.printStackTrace();
-			em.refresh(p);
-			p.setDeprecated(deprecated);
-			em.flush();
-			
+			ex.printStackTrace();			
 			throw ex;
 		}
 		
 	}
 	
 	@Override
-	
 	public void  calcularHistoriaAlgoritmos(){
 		System.out.println("Inicia calculo historia algo");
+		long nanosInicio = System.nanoTime();
 		for(PaqueteAlgoritmico pa : ejbPaquete.obtenerPaquetesAlgoritmicos()){
 			if (pa.getPrimerFecha() == null){
 				pa.setPrimerFecha(ejbPaquete.getPrimerFechaPaquete(pa));
@@ -488,7 +502,7 @@ public class EjbCalculoSaldo implements IEjbCalculoSaldoHist {
 				em.flush();
 			}
 		}
-		System.out.println("termina calculo historia algo");
+		System.out.println("termina calculo historia algo " );
 	}
 	
 	@SuppressWarnings("unchecked")

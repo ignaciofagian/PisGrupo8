@@ -1,16 +1,10 @@
-//
-//  DetailTableViewController.h
-//  PlainStockiOS
-//
-//  Created by nacho on 9/6/15.
-//  Copyright (c) 2015 FING. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
+#import "WSManager.h"
 
-@interface MPSDetailTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface MPSDetailTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, WSManagerDelegate>
 
-@property NSMutableArray  *balanceHistory;
-//@property NSMutableData  *data;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UILabel *momentLabel;
+@property (weak, nonatomic) IBOutlet UILabel *balanceLabel;
 
 @end

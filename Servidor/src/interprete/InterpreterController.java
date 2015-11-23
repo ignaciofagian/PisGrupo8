@@ -11,9 +11,11 @@ import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 import ejb.EjbAlgoritmo;
 import ejb.IEjbAlgoritmo;
+import model.PaqueteAlgoritmico;
 
 public class InterpreterController implements IInterpreter {
 	private IEjbAlgoritmo ejb;
+	private PaqueteAlgoritmico _pa;
 	private boolean debug = false;
 
 	public static String jdni = "java:app/Servidor/EjbAlgoritmo";
@@ -97,12 +99,22 @@ public class InterpreterController implements IInterpreter {
 		    
 		    if (d.getBuyOperations() > 0){
 		    	if(debug) System.out.println("Buy Operations " + d.getBuyOperations());
-		    	al.buy(idPaquete, d.getBuyOperations());
+		    	if (this.getPA() == null){
+		    		al.buy(idPaquete, d.getBuyOperations());
+		    	}
+		    	else{
+		    		al.buy(_pa, d.getBuyOperations());
+		    	}
 		    }
 		    
 		    if (d.getSellOperations() > 0){
 		    	if (debug) System.out.println("Sell Operations " + d.getSellOperations());
-		    	al.sell(idPaquete, d.getSellOperations());
+		    	if (this.getPA() == null){
+		    		al.sell(idPaquete, d.getSellOperations());
+		    	}
+		    	else{
+		    		al.sell(_pa, d.getSellOperations());
+		    	}
 		    }
 		    
 		    if (debug) System.out.println("done");    
@@ -142,6 +154,17 @@ public class InterpreterController implements IInterpreter {
 	@Override
 	public boolean getDebug() {
 		return this.debug;
+		
+	}
+
+	@Override
+	public PaqueteAlgoritmico getPA() {
+		return _pa;
+	}
+
+	@Override
+	public void setPA(PaqueteAlgoritmico pa) {
+		_pa = pa;
 		
 	}
 	

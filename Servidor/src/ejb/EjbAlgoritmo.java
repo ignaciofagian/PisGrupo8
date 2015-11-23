@@ -129,4 +129,25 @@ public class EjbAlgoritmo implements IEjbAlgoritmo {
 		PaqueteAlgoritmico p = (PaqueteAlgoritmico)em.find(PaqueteAlgoritmico.class, idPaquete);
 		return obtenerHistoria(p, comienzo, fin, fecha);
 	}
+
+	@Override
+	public void buy(PaqueteAlgoritmico pa, double monto) {
+
+		if (monto < 0) {
+			this.sell(pa, Math.abs(monto));
+			return;
+		}
+		pa.comprar(monto);	
+	}
+
+	@Override
+	public void sell(PaqueteAlgoritmico pa, double monto) {
+
+		if (monto < 0) {
+			this.buy(pa, Math.abs(monto));
+			return;
+		}
+		pa.vender(monto);
+		
+	}
 }

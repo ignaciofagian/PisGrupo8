@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>MAX_CHART_POINTS</key>
+	<integer>500</integer>
+	<key>CASH_UPDATE_INTERVAL</key>
+	<integer>120</integer>
+	<key>MIN_DATE</key>
+	<string>01/01/2010</string>
+	<key>WS_BASE_URL</key>
+	<string>http://52.88.80.212:8080/Servidor/rest/app</string>
+	<key>DB_NAME</key>
+	<string>plainstock.db</string>
+</dict>
+</plist>

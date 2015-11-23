@@ -57,9 +57,10 @@ public class Accion implements Serializable {
 		this.historicos = historicos;
 	}
 	
-	public void agregarHistorico(Date fecha,double valor){
+	public Historico agregarHistorico(Date fecha,double valor){
 		Historico h = new Historico(this,valor,valor,fecha); 
 		this.getHistoricos().add(h);
+		return h;
 	}
 	
 	public void agregarHistorico(Date fecha,double valor,double valAdj){

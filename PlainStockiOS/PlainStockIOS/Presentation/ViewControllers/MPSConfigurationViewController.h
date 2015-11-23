@@ -1,17 +1,17 @@
-//
-//  ConfigurationTableViewController.h
-//  PlainStockiOS
-//
-//  Created by nacho on 9/9/15.
-//  Copyright (c) 2015 FING. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
 
 @interface MPSConfigurationViewController : UITableViewController<UIPickerViewDelegate, UIPickerViewDataSource>
 
-@property (strong, nonatomic) NSArray *languageCollection;
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBarTitle;
+@property (weak, nonatomic) IBOutlet UILabel *receiveNotificationsLabel;
+@property (weak, nonatomic) IBOutlet UILabel *dateTextLabel;
+@property (weak, nonatomic) IBOutlet UILabel *systemDateLabel;
+@property (weak, nonatomic) IBOutlet UIButton *changeDateButton;
+@property (weak, nonatomic) IBOutlet UIButton *resetButton;
+@property (weak, nonatomic) IBOutlet UIPickerView *languagePickerView;
 
-@property (weak, nonatomic) IBOutlet UILabel *lblSystemDate;
+
+- (IBAction)resetButtonPressed:(id)sender;
+- (IBAction)resetInfoButtonPressed:(id)sender;
 
 @end

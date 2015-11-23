@@ -1,16 +1,16 @@
-//
-//  DetailTableViewController.m
-//  PlainStockiOS
-//
-//  Created by nacho on 9/6/15.
-//  Copyright (c) 2015 FING. All rights reserved.
-//
-
 #import "MPSDetailTableViewController.h"
 #import "MPSDetailTableViewCell.h"
 #import "BLController.h"
+#import "WSManager.h"
+#import "DataDateCash.h"
+#import "DBManager.h"
 
 @interface MPSDetailTableViewController ()
+
+@property (weak, nonatomic) IBOutlet UINavigationItem *navBarTitle;
+@property (strong, nonatomic) NSMutableArray  *balanceHistory;
+@property (strong, nonatomic) NSDateFormatter *dbDateFormatter;
+@property (strong, nonatomic) NSDateFormatter *tableDateFormatter;
 
 @end
 
@@ -21,72 +21,52 @@ static NSString *cellIden = @"cellIden";
 
 - (void)viewDidLoad
 {
-    
     [super viewDidLoad];
-    BLController *bl = [BLController getInstance];
-    NSString *userId = bl.userId;
-    
-    
-    NSString *urlService =
-    @"http://52.88.80.212:8080/Servidor/rest/app/saldos?";
-    urlService = [urlService stringByAppendingString:@"id="];
-    urlService = [urlService stringByAppendingString:userId];
-    urlService = [urlService stringByAppendingString:@"&desde=0&hasta=0"];
-
-    
-    NSURLRequest * urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:urlService]];
-    NSURLResponse * response = nil;
-    NSError * error = nil;
-    NSData * data = [NSURLConnection sendSynchronousRequest:urlRequest
-                                          returningResponse:&response
-                                                      error:&error];
-    
-    if (error == nil)
-    {
-        // Parse data here
-        NSArray* json = [NSJSONSerialization JSONObjectWithData:data
-                                             options:kNilOptions
-                                             error:&error];
-
-        self.balanceHistory = [NSMutableArray array];
-        
-        int length = [json count];
-        NSDictionary *firstBalance = [json objectAtIndex:0];
-        NSNumber *balanceFirst = [firstBalance valueForKey:@"saldo"];
-        long lastValue = [balanceFirst longValue];
-        
-        for (int indexValue = 0; indexValue< length; indexValue++)
-        {
-            
-            NSDictionary *balance = [json objectAtIndex:indexValue];
-            
-            NSString *date = [NSString stringWithFormat:[balance valueForKey:@"tiempo"],indexValue];
-            NSNumber *currentValue = [balance valueForKey:@"saldo"];
-            
-            long long_current_value = [currentValue longValue];
-            NSString *saldo = [NSString stringWithFormat:@"%ld", long_current_value];
-            
-            long porcentaje = ((lastValue- long_current_value)/long_current_value)*100;
-            NSString *porcentajeString = [NSString stringWithFormat:@"%ld", porcentaje];
-            porcentajeString = [porcentajeString stringByAppendingString:@"%"];
-            lastValue = long_current_value;
-            
-            date = [date substringToIndex:10]; //date is of format 2015/01/01, 10 characaters, time is removed
-            
-            
-            NSDictionary *balance2 = @{
-                                      @"date": date,
-                                      @"percentage": porcentajeString,
-                                      @"mount": saldo
-                                      };
-      
-            [self.balanceHistory addObject:balance2];
-            
-        }
-       
-    }
-   
+    self.dbDateFormatter = [[NSDateFormatter alloc] init];
+    self.tableDateFormatter = [[NSDateFormatter alloc] init];
+    [self.dbDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+    [self.tableDateFormatter setDateFormat:@"dd/MM/yy - HH:mm"];
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    //sets strings for current language
+    Language lang = [BLController sharedInstance].language;
+    self.navBarTitle.title = (lang == ENG) ? @"Details" : @"Detalles";
+    self.balanceLabel.text = (lang == ENG) ? @"Balance" : @"Saldo";
+    self.momentLabel.text = (lang == ENG) ? @"Moment" : @"Momento";
+    
+    //refresh table
+    [self getDataAndRefreshTable];
+}
+
+
+- (void)getDataAndRefreshTable
+{
+    if (self.balanceHistory == nil)
+        self.balanceHistory = [[NSMutableArray alloc] init];
+    
+    //gets all balance history but add row only on change of balance
+    NSMutableArray *newBalanceHistory = [[DBManager sharedInstance] getCashHistoryFrom:0 to:DBL_MAX];
+    
+    if (newBalanceHistory.count > 0)
+    {
+        [self.balanceHistory removeAllObjects];
+        [self.balanceHistory addObject:newBalanceHistory[0]];
+        
+        for (int i = 1; i < newBalanceHistory.count; i++)
+        {
+            DataDateCash *ddc1 = newBalanceHistory[i-1];
+            DataDateCash *ddc2 = newBalanceHistory[i];
+            
+            if (![ddc2.cash isEqualToString:ddc1.cash])
+                [self.balanceHistory addObject:newBalanceHistory[i]];
+        }
+    }
+         
+    [self.tableView reloadData];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -109,16 +89,60 @@ static NSString *cellIden = @"cellIden";
 {
     MPSDetailTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIden];
     if (cell == nil)
-    {
         cell = [[MPSDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIden];
+    
+    DataDateCash *ddc_current = [self.balanceHistory objectAtIndex:indexPath.row];
+    
+    if (indexPath.row == 0)
+    {
+        [cell.lblDate setText:[self tableDateFromDBDateString:ddc_current.date]];
+        [cell.lblPercentage setText:@"0.0%"];
+        cell.lblPercentage.textColor = [UIColor greenColor];
+        [cell.lblMount setText:[NSString stringWithFormat:@"$%@",ddc_current.cash]];
+    }
+    else
+    {
+        DataDateCash *ddc_last = [self.balanceHistory objectAtIndex:indexPath.row - 1];
+        DataDateCash *ddc_current = [self.balanceHistory objectAtIndex:indexPath.row];
+        
+        NSString *lastvaluestring = ddc_last.cash;
+        NSString *currentValueString = ddc_current.cash;
+        
+        float lastvalue = [lastvaluestring floatValue];
+        float currentValue = [currentValueString floatValue];
+        
+        //percentage = (current - last) * 100 / last
+        float percentage = (currentValue - lastvalue) * 100.0 / lastvalue;
+        
+        NSString *percentageString = [NSString stringWithFormat:@"%.1f", percentage];
+        percentageString = [percentageString stringByAppendingString:@"%"];
+        
+        if (percentage >= 0.0)
+        {
+            cell.lblPercentage.textColor = [UIColor greenColor];
+            [cell.lblPercentage setText:[NSString stringWithFormat:@"+%@", percentageString]];
+        }
+        else
+        {
+            cell.lblPercentage.textColor = [UIColor redColor];
+            [cell.lblPercentage setText:[NSString stringWithFormat:@"%@", percentageString]];
+        }
+        
+        cell.lblPercentage.textAlignment = NSTextAlignmentCenter;
+        
+        [cell.lblDate setText:[self tableDateFromDBDateString:ddc_current.date]];
+        [cell.lblMount setText:[NSString stringWithFormat:@"$%@",ddc_current.cash]];
     }
     
-    [cell.lblDate setText:[[self.balanceHistory objectAtIndex:indexPath.row] objectForKey:@"date"]];
-    [cell.lblPercentage setText:[[self.balanceHistory objectAtIndex:indexPath.row] objectForKey:@"percentage"]];
-    cell.lblPercentage.textColor=[UIColor greenColor];
-    [cell.lblMount setText:[[self.balanceHistory objectAtIndex:indexPath.row] objectForKey:@"mount"]];
     return cell;
-    
+}
+
+
+- (NSString *)tableDateFromDBDateString:(NSString *)dbDateString
+{
+    NSDate *date = [self.dbDateFormatter dateFromString: dbDateString];
+    NSString *tableFormattedDate = [self.tableDateFormatter stringFromDate:date];
+    return tableFormattedDate;
 }
 
 @end
